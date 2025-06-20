@@ -1,7 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useRef } from "react";
+
+// Define the shape of messages from the Stockfish worker
+interface StockfishMessage {
+  data: string;
+}
 
 interface EvaluationBarProps {
   fen: string;
@@ -17,7 +21,67 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
   boardHeight,
 }) => {
   const [evaluation, setEvaluation] = useState<number | null>(null);
-  const [evaluationSign, setEvaluationSign] = useState<string | null>(null);
+  const [isStockfishReady, setIsStockfishReady] = useState(false);
+  const stockfish = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    const stockfishUrl =
+      "https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js";
+
+    // To bypass CORS issues with loading a worker from a CDN,
+    // we fetch the script and create a local Blob URL.
+    fetch(stockfishUrl)
+      .then((res) => res.text())
+      .then((code) => {
+        const blob = new Blob([code], { type: "application/javascript" });
+        const blobUrl = URL.createObjectURL(blob);
+        const worker = new Worker(blobUrl);
+        stockfish.current = worker;
+
+        worker.onmessage = (event: StockfishMessage) => {
+          const message = event.data;
+
+          if (message === "readyok") {
+            setIsStockfishReady(true);
+          } else if (message.startsWith("info depth")) {
+            const match = message.match(/score (cp|mate) (-?\d+)/);
+            if (match) {
+              const scoreType = match[1];
+              const scoreValue = parseInt(match[2], 10);
+
+              let evalInPawns: number;
+              if (scoreType === "cp") {
+                evalInPawns = scoreValue / 100.0;
+              } else {
+                evalInPawns = scoreValue > 0 ? 8 : -8;
+              }
+              setEvaluation(evalInPawns);
+            }
+          }
+        };
+
+        worker.postMessage("uci");
+        worker.postMessage("isready");
+      })
+      .catch((error) => {
+        console.error("Failed to load Stockfish worker:", error);
+      });
+
+    return () => {
+      stockfish.current?.postMessage("quit");
+      stockfish.current?.terminate();
+      // Clean up the Blob URL
+      // Note: This part of the cleanup might not be strictly necessary
+      // as the browser should release it when the document is unloaded.
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isGameFetched && fen && stockfish.current && isStockfishReady) {
+      stockfish.current.postMessage(`position fen ${fen}`);
+      stockfish.current.postMessage("go depth 12");
+    }
+  }, [fen, isGameFetched, isStockfishReady]);
 
   const getWhiteHeight = (evalScore: number | null) => {
     if (evalScore === null) return "50%";
@@ -33,28 +97,11 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
     return `${sign}${absEval.toFixed(1)}`;
   };
 
-  useEffect(() => {
-    if (isGameFetched && fen) {
-      const fetchEvaluation = async () => {
-        try {
-          const response = await axios.post("https://chess-api.com/v1", {
-            fen: fen,
-            depth: 12,
-          });
-          setEvaluation(
-            response.data.eval !== undefined ? response.data.eval : null
-          );
-        } catch (error) {
-          console.error("Error fetching evaluation:", error);
-        }
-      };
-
-      fetchEvaluation();
-    }
-  }, [fen, isGameFetched]);
-
   return (
-    <div className="relative w-6 bg-accent-foreground overflow-hidden h-full">
+    <div
+      className="relative w-6 bg-accent-foreground overflow-hidden"
+      style={{ height: boardHeight > 0 ? `${boardHeight}px` : "100%" }}
+    >
       <div
         className={`absolute ${
           boardOrientation === "white" ? "bottom-0" : "top-0"
@@ -70,13 +117,10 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
             ? "bottom-3 items-end"
             : "top-3 items-start"
         } ${
-          Number(displayEvaluation(evaluation)) > 0 ? "flex" : "hidden"
+          Number(displayEvaluation(evaluation)) >= 0 ? "flex" : "hidden"
         } flex items-end justify-center`}
       >
-        <span
-          key={evaluation}
-          className="font-bold text-xs"
-        >
+        <span key={evaluation} className="font-bold text-xs">
           {displayEvaluation(evaluation).replace(/[^0-9.-]+/g, "")}
         </span>
       </div>
@@ -88,13 +132,11 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
             boardOrientation === "white"
               ? "top-3 items-start"
               : "bottom-3 items-end"
-          } ${Number(displayEvaluation(evaluation)) < 0 ? "flex" : "hidden"}
-          flex items-end justify-center`}
+          } ${
+            Number(displayEvaluation(evaluation)) < 0 ? "flex" : "hidden"
+          } flex items-end justify-center`}
         >
-          <span
-            key={evaluation}
-            className="font-bold text-white text-xs"
-          >
+          <span key={evaluation} className="font-bold text-white text-xs">
             {displayEvaluation(evaluation).replace(/[^0-9.]+/g, "")}
           </span>
         </div>

@@ -1,1 +1,0 @@
-// Board with evaluation bar, clock, controls etc

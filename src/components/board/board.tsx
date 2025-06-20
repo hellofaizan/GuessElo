@@ -20,7 +20,6 @@ interface ChessViewerProps {
   boardOrientation: "white" | "black";
   onFenChange: (fen: string) => void;
   isGameFetched: boolean;
-  showMoveTable: boolean;
 }
 
 export default function ChessBoard({
@@ -30,7 +29,6 @@ export default function ChessBoard({
   boardOrientation,
   onFenChange,
   isGameFetched,
-  showMoveTable,
 }: ChessViewerProps) {
   const [game, setGame] = useState<Chess>(new Chess());
   const [fen, setFen] = useState<string>(game.fen());
@@ -154,16 +152,16 @@ export default function ChessBoard({
   }, []);
 
   return (
-    <div className={`w-full h-full flex gap-1`}>
+    <div className={`w-full h-full flex items-start gap-1`}>
       <div className="flex-none h-full">
-      <EvaluationBar
-        fen={game.fen()}
-        isGameFetched={isGameFetched}
-        boardOrientation={boardOrientation}
-        boardHeight={boardHeight} // Pass the boardHeight to EvaluationBar
-      />
+        <EvaluationBar
+          fen={game.fen()}
+          isGameFetched={isGameFetched}
+          boardOrientation={boardOrientation}
+          boardHeight={boardHeight}
+        />
       </div>
-      <div className="flex-1 h-full aspect-square" ref={boardRef}>
+      <div className="flex-1 h-full aspect-square max-w-[500px] max-h-[500px]" ref={boardRef}>
         <Chessboard
           position={game.fen()}
           customPieces={customPieces}

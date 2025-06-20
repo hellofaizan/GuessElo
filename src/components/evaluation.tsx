@@ -25,54 +25,41 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
   const stockfish = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const stockfishUrl =
-      "https://cdnjs.cloudflare.com/ajax/libs/stockfish.js/10.0.2/stockfish.js";
+    // The worker is now created from a static file in the public directory
+    // This file imports the stockfish script, making it statically analyzable
+    const worker = new Worker(
+      new URL("../workers/stockfish-worker.js", import.meta.url)
+    );
+    stockfish.current = worker;
 
-    // To bypass CORS issues with loading a worker from a CDN,
-    // we fetch the script and create a local Blob URL.
-    fetch(stockfishUrl)
-      .then((res) => res.text())
-      .then((code) => {
-        const blob = new Blob([code], { type: "application/javascript" });
-        const blobUrl = URL.createObjectURL(blob);
-        const worker = new Worker(blobUrl);
-        stockfish.current = worker;
+    worker.onmessage = (event: StockfishMessage) => {
+      const message = event.data;
 
-        worker.onmessage = (event: StockfishMessage) => {
-          const message = event.data;
+      if (message === "readyok") {
+        setIsStockfishReady(true);
+      } else if (message.startsWith("info depth")) {
+        const match = message.match(/score (cp|mate) (-?\d+)/);
+        if (match) {
+          const scoreType = match[1];
+          const scoreValue = parseInt(match[2], 10);
 
-          if (message === "readyok") {
-            setIsStockfishReady(true);
-          } else if (message.startsWith("info depth")) {
-            const match = message.match(/score (cp|mate) (-?\d+)/);
-            if (match) {
-              const scoreType = match[1];
-              const scoreValue = parseInt(match[2], 10);
-
-              let evalInPawns: number;
-              if (scoreType === "cp") {
-                evalInPawns = scoreValue / 100.0;
-              } else {
-                evalInPawns = scoreValue > 0 ? 8 : -8;
-              }
-              setEvaluation(evalInPawns);
-            }
+          let evalInPawns: number;
+          if (scoreType === "cp") {
+            evalInPawns = scoreValue / 100.0;
+          } else {
+            evalInPawns = scoreValue > 0 ? 8 : -8;
           }
-        };
+          setEvaluation(evalInPawns);
+        }
+      }
+    };
 
-        worker.postMessage("uci");
-        worker.postMessage("isready");
-      })
-      .catch((error) => {
-        console.error("Failed to load Stockfish worker:", error);
-      });
+    worker.postMessage("uci");
+    worker.postMessage("isready");
 
     return () => {
       stockfish.current?.postMessage("quit");
       stockfish.current?.terminate();
-      // Clean up the Blob URL
-      // Note: This part of the cleanup might not be strictly necessary
-      // as the browser should release it when the document is unloaded.
     };
   }, []);
 

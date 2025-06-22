@@ -108,36 +108,36 @@ export default function ChessBoard({
     audio.play().catch((error) => console.error("Error playing sound:", error));
   }, []);
 
-  const updateBoardInfo = useCallback(() => {
-    onFenChange(game.fen());
-  }, [game, onFenChange]);
-
   useEffect(() => {
     if (pgn) {
       const newGame = new Chess();
       newGame.loadPgn(pgn);
       const moves = newGame.history();
+      const tempGame = new Chess();
+      const headers = newGame.header();
+      if (headers.FEN) {
+        tempGame.load(headers.FEN);
+      }
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      setGame((_prevGame) => {
-        const tempGame = new Chess();
-        if (currentMove >= 0 && currentMove < moves.length) {
-          for (let i = 0; i <= currentMove; i++) {
-            tempGame.move(moves[i]);
-          }
-          if (currentMove !== prevMoveRef.current) {
-            playMoveSound(moves[currentMove]);
-            prevMoveRef.current = currentMove;
-          }
-          return tempGame;
-        } else {
-          return newGame;
+      if (currentMove >= 0 && currentMove < moves.length) {
+        for (let i = 0; i <= currentMove; i++) {
+          tempGame.move(moves[i]);
         }
-      });
+      }
 
-      updateBoardInfo();
+      if (currentMove !== prevMoveRef.current) {
+        if (currentMove > -1 && currentMove < moves.length) {
+          playMoveSound(moves[currentMove]);
+        }
+        prevMoveRef.current = currentMove;
+      }
+      setGame(tempGame);
     }
-  }, [pgn, currentMove, playMoveSound, updateBoardInfo]);
+  }, [pgn, currentMove, playMoveSound]);
+
+  useEffect(() => {
+    onFenChange(game.fen());
+  }, [game, onFenChange]);
 
   useEffect(() => {
     const updateBoardHeight = () => {

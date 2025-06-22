@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 // Define the shape of messages from the Stockfish worker
 interface StockfishMessage {
@@ -89,45 +90,91 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
       className="relative w-6 bg-accent-foreground overflow-hidden"
       style={{ height: boardHeight > 0 ? `${boardHeight}px` : "100%" }}
     >
-      <div
+      <motion.div
         className={`absolute ${
           boardOrientation === "white" ? "bottom-0" : "top-0"
         } left-0 right-0 bg-[#dcdcdc]`}
         style={{ height: getWhiteHeight(evaluation) }}
+        animate={{ height: getWhiteHeight(evaluation) }}
+        transition={{
+          ease: "circInOut",
+          duration: 1,
+        }}
       />
+      
       {/* Show evaluation only for the player at the bottom */}
+      <AnimatePresence mode="wait">
+        {evaluation !== null && Number(displayEvaluation(evaluation)) >= 0 && (
+          <motion.div
+            key="white-eval"
+            id="whiteEvaluation"
+            className={`absolute inset-0 ${
+              boardOrientation === "white"
+                ? "bottom-3 items-end"
+                : "top-3 items-start"
+            } flex items-end justify-center`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 25 
+            }}
+          >
+            <motion.span 
+              key={evaluation} 
+              className="font-bold text-xs"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 500, 
+                damping: 20 
+              }}
+            >
+              {displayEvaluation(evaluation).replace(/[^0-9.-]+/g, "")}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <div
-        id="whiteEvaluation"
-        className={`absolute inset-0 ${
-          boardOrientation === "white"
-            ? "bottom-3 items-end"
-            : "top-3 items-start"
-        } ${
-          Number(displayEvaluation(evaluation)) >= 0 ? "flex" : "hidden"
-        } flex items-end justify-center`}
-      >
-        <span key={evaluation} className="font-bold text-xs">
-          {displayEvaluation(evaluation).replace(/[^0-9.-]+/g, "")}
-        </span>
-      </div>
       {/* If evaluation is negative, show it at the top for black */}
-      {evaluation !== null && evaluation < 0 && (
-        <div
-          id="blackEvaluation"
-          className={`absolute inset-0 ${
-            boardOrientation === "white"
-              ? "top-3 items-start"
-              : "bottom-3 items-end"
-          } ${
-            Number(displayEvaluation(evaluation)) < 0 ? "flex" : "hidden"
-          } flex items-end justify-center`}
-        >
-          <span key={evaluation} className="font-bold text-white text-xs">
-            {displayEvaluation(evaluation).replace(/[^0-9.]+/g, "")}
-          </span>
-        </div>
-      )}
+      <AnimatePresence mode="wait">
+        {evaluation !== null && evaluation < 0 && (
+          <motion.div
+            key="black-eval"
+            id="blackEvaluation"
+            className={`absolute inset-0 ${
+              boardOrientation === "white"
+                ? "top-3 items-start"
+                : "bottom-3 items-end"
+            } flex items-end justify-center`}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 400, 
+              damping: 25 
+            }}
+          >
+            <motion.span 
+              key={evaluation} 
+              className="font-bold text-white text-xs"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 500, 
+                damping: 20 
+              }}
+            >
+              {displayEvaluation(evaluation).replace(/[^0-9.]+/g, "")}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -12,14 +12,13 @@ import {
   Clock,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { Slider } from "~/components/ui/slider";
 import ChessViewer from "~/components/board/board";
-import Timer from "~/components/timer";
 import { useChessGame } from "~/hooks/use-chess-game";
 import GameControls from "./GameControls";
 import PlayerInfo from "./PlayerInfo";
 import GameMeta from "./GameMeta";
 import GuessPopup from "./GuessPopup";
+import MoveList from "./MoveList";
 
 export default function GTEPage() {
   const {
@@ -164,6 +163,13 @@ export default function GTEPage() {
             </div>
           </div>
           <div className="w-full lg:w-96 flex flex-col gap-4">
+            {gameStage !== "initial" && (
+              <MoveList
+                pgn={game.pgn()}
+                currentMove={currentMove}
+                onMoveChange={handleMoveSelect}
+              />
+            )}
             <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 flex-1 flex flex-col">
               <h2 className="mb-4 text-xl font-bold">Start New Game</h2>
               <div className="flex-1 flex flex-col items-center justify-center text-center">

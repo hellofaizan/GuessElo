@@ -31,13 +31,9 @@ export default function ChessBoard({
   isGameFetched,
 }: ChessViewerProps) {
   const [game, setGame] = useState<Chess>(new Chess());
-  const [fen, setFen] = useState<string>(game.fen());
   const prevMoveRef = useRef<number>(-1);
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardHeight, setBoardHeight] = useState(0);
-  const [moveTable, setMoveTable] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   const customPieces = useMemo(() => {
     const pieceComponents: {

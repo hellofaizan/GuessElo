@@ -2,11 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-
-// Define the shape of messages from the Stockfish worker
-interface StockfishMessage {
-  data: string;
-}
+import axios from "axios";
 
 interface EvaluationBarProps {
   fen: string;
@@ -22,67 +18,61 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
   boardHeight,
 }) => {
   const [evaluation, setEvaluation] = useState<number | null>(null);
-  const [isStockfishReady, setIsStockfishReady] = useState(false);
-  const stockfish = useRef<Worker | null>(null);
+  const [isFetching, setIsFetching] = useState(false);
+  const fetchTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    // The worker is now created from a static file in the public directory
-    // This file imports the stockfish script, making it statically analyzable
-    const worker = new Worker(
-      new URL("../workers/stockfish-worker.js", import.meta.url)
-    );
-    stockfish.current = worker;
-
-    worker.onmessage = (event: StockfishMessage) => {
-      const message = event.data;
-
-      if (message === "readyok") {
-        setIsStockfishReady(true);
-      } else if (message.startsWith("info depth")) {
-        const match = message.match(/score (cp|mate) (-?\d+)/);
-        if (match) {
-          const scoreType = match[1];
-          const scoreValue = parseInt(match[2], 10);
-
-          let evalInPawns: number;
-          if (scoreType === "cp") {
-            evalInPawns = scoreValue / 100.0;
-          } else {
-            evalInPawns = scoreValue > 0 ? 8 : -8;
-          }
-          setEvaluation(evalInPawns);
+    const fetchEvaluation = async () => {
+      if (!fen || isFetching) return;
+      setIsFetching(true);
+      try {
+        const response = await axios.post("https://chess-api.com/v1", {
+          fen: fen,
+          depth: 14,
+        });
+        if (response.data && typeof response.data.eval === "number") {
+          setEvaluation(response.data.eval);
         }
+      } catch (error) {
+        console.error("Error fetching evaluation:", error);
+        setEvaluation(null);
+      } finally {
+        setIsFetching(false);
       }
     };
 
-    worker.postMessage("uci");
-    worker.postMessage("isready");
+    if (isGameFetched) {
+      if (fetchTimeout.current) {
+        clearTimeout(fetchTimeout.current);
+      }
+      fetchTimeout.current = setTimeout(fetchEvaluation, 500); // Debounce API calls
+    }
 
     return () => {
-      stockfish.current?.postMessage("quit");
-      stockfish.current?.terminate();
+      if (fetchTimeout.current) {
+        clearTimeout(fetchTimeout.current);
+      }
     };
-  }, []);
-
-  useEffect(() => {
-    if (isGameFetched && fen && stockfish.current && isStockfishReady) {
-      stockfish.current.postMessage(`position fen ${fen}`);
-      stockfish.current.postMessage("go depth 12");
-    }
-  }, [fen, isGameFetched, isStockfishReady]);
+  }, [fen, isGameFetched]);
 
   const getWhiteHeight = (evalScore: number | null) => {
     if (evalScore === null) return "50%";
-    const normalizedEval = Math.max(-8, Math.min(8, evalScore));
-    const percentage = ((normalizedEval + 8) / 16) * 100;
+    const normalizedEval = Math.max(-10, Math.min(10, evalScore));
+    const percentage = ((normalizedEval + 10) / 20) * 100;
     return `${percentage}%`;
   };
 
   const displayEvaluation = (evalScore: number | null) => {
     if (evalScore === null) return "0.0";
     const absEval = Math.abs(evalScore);
-    const sign = evalScore >= 0 ? "+" : "-";
-    return `${sign}${absEval.toFixed(1)}`;
+    const sign = evalScore > 0 ? "+" : "-";
+    if (evalScore === 0) return "0.0";
+
+    if (absEval >= 9.5) {
+      return `M${Math.ceil(absEval)}`;
+    } else {
+      return `${sign}${absEval.toFixed(1)}`;
+    }
   };
 
   return (
@@ -98,13 +88,13 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
         animate={{ height: getWhiteHeight(evaluation) }}
         transition={{
           ease: "circInOut",
-          duration: 1,
+          duration: 0.8,
         }}
       />
-      
+
       {/* Show evaluation only for the player at the bottom */}
       <AnimatePresence mode="wait">
-        {evaluation !== null && Number(displayEvaluation(evaluation)) >= 0 && (
+        {evaluation !== null && evaluation >= 0 && (
           <motion.div
             key="white-eval"
             id="whiteEvaluation"
@@ -116,21 +106,21 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
-              damping: 25 
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 25,
             }}
           >
-            <motion.span 
-              key={evaluation} 
+            <motion.span
+              key={evaluation}
               className="font-bold text-xs"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 500, 
-                damping: 20 
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 20,
               }}
             >
               {displayEvaluation(evaluation).replace(/[^0-9.-]+/g, "")}
@@ -153,21 +143,21 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 400, 
-              damping: 25 
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 25,
             }}
           >
-            <motion.span 
-              key={evaluation} 
+            <motion.span
+              key={evaluation}
               className="font-bold text-white text-xs"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 500, 
-                damping: 20 
+              transition={{
+                type: "spring",
+                stiffness: 500,
+                damping: 20,
               }}
             >
               {displayEvaluation(evaluation).replace(/[^0-9.]+/g, "")}

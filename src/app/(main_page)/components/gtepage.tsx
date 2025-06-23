@@ -209,7 +209,7 @@ export default function GTEPage() {
               </p>
               <Button
                 onClick={handleStartGuessing}
-                className="w-full rounded-lg px-4 py-2 font-bold"
+                className="w-full rounded-lg px-4 py-2 font-bold cursor-pointer"
                 disabled={isLoading || gameStage !== "initial"}
               >
                 {isLoading ? "Loading..." : "START GUESSING"}
@@ -252,30 +252,32 @@ export default function GTEPage() {
           />
 
           {/* Controls Bar */}
-          <div className="mt-2 h-12 flex w-full items-center justify-between rounded-lg overflow-hidden">
-            <Button
-              className="flex-1 h-full flex items-center justify-cente rounded-r-none transition-colors"
-              onClick={handlePreviousMove}
-              aria-label="Previous Move"
-            >
-              <ChevronLeft size={32} />
-            </Button>
-            <Button
-              className="flex-1 h-full flex items-center justify-center py-3 rounded-none transition-colors border-x"
-              onClick={handleFlipBoard}
-              aria-label="Flip Board"
-              title=""
-            >
-              <ArrowUpDown size={28} />
-            </Button>
-            <Button
-              className="flex-1 h-full flex items-center justify-center rounded-l-none transition-colors"
-              onClick={handleNextMove}
-              aria-label="Next Move"
-            >
-              <ChevronRight size={32} />
-            </Button>
-          </div>
+          {(gameStage === "guessing" || gameStage === "revealed") && (
+            <div className="mt-2 h-12 flex w-full items-center justify-between rounded-lg overflow-hidden">
+              <Button
+                className="flex-1 h-full flex items-center justify-cente rounded-r-none transition-colors"
+                onClick={handlePreviousMove}
+                aria-label="Previous Move"
+              >
+                <ChevronLeft size={32} />
+              </Button>
+              <Button
+                className="flex-1 h-full flex items-center justify-center py-3 rounded-none transition-colors border-x"
+                onClick={handleFlipBoard}
+                aria-label="Flip Board"
+                title=""
+              >
+                <ArrowUpDown size={28} />
+              </Button>
+              <Button
+                className="flex-1 h-full flex items-center justify-center rounded-l-none transition-colors"
+                onClick={handleNextMove}
+                aria-label="Next Move"
+              >
+                <ChevronRight size={32} />
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Right Column */}
@@ -293,7 +295,7 @@ export default function GTEPage() {
                 </p>
                 <Button
                   onClick={handleStartGuessing}
-                  className="w-full rounded-md py-3"
+                  className="w-full rounded-md py-3 cursor-pointer"
                   disabled={isLoading}
                 >
                   {isLoading ? "Loading..." : "Start Guessing"}
@@ -328,7 +330,7 @@ export default function GTEPage() {
                 </div>
                 <Button
                   onClick={handleGuess}
-                  className="w-full rounded-md py-3"
+                  className="w-full rounded-md py-3 cursor-pointer"
                   disabled={gameStage === "revealed"}
                   hidden={gameStage === "revealed"}
                 >
@@ -338,7 +340,7 @@ export default function GTEPage() {
                   <div className="mt-4 text-center">
                     <Button
                       onClick={handleNextGameWithReset}
-                      className="mt-4 w-full rounded-md py-3"
+                      className="mt-4 w-full rounded-md py-3 cursor-pointer"
                     >
                       Next Game
                     </Button>

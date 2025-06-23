@@ -33,20 +33,20 @@ const GameControls: React.FC<GameControlsProps> = ({
         <>
           <Button
             onClick={handlePreviousMove}
-            className="p-2 border border-border"
+            className="p-2 border border-border cursor-pointer"
             variant="outline"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
-          <Button onClick={handleNextMove} className="p-2 border border-border" variant="outline">
+          <Button onClick={handleNextMove} className="p-2 border border-border cursor-pointer" variant="outline">
             <ArrowRight className="h-6 w-6" />
           </Button>
-          <Button onClick={handleFlipBoard} className="p-2 border border-border" variant="outline">
+          <Button onClick={handleFlipBoard} className="p-2 border border-border cursor-pointer" variant="outline">
             <ArrowUpDown className="h-6 w-6" />
           </Button>
           <Sheet>
             <SheetTrigger asChild>
-              <Button className="w-48 rounded-lg px-4 py-2 font-bold">
+              <Button className="w-48 rounded-lg px-4 py-2 font-bold cursor-pointer">
                 Guess the ELO
               </Button>
             </SheetTrigger>
@@ -69,7 +69,7 @@ const GameControls: React.FC<GameControlsProps> = ({
               </div>
               <SheetFooter>
                 <SheetClose asChild>
-                  <Button className="w-full" onClick={handleGuess}>
+                  <Button className="w-full cursor-pointer" onClick={handleGuess}>
                     Submit Guess
                   </Button>
                 </SheetClose>
@@ -81,7 +81,7 @@ const GameControls: React.FC<GameControlsProps> = ({
       {gameStage === "revealed" && (
         <Button
           onClick={handleNextGameWithReset}
-          className="w-48 rounded-lg px-4 py-2 font-bold"
+          className="w-48 rounded-lg px-4 py-2 font-bold cursor-pointer"
         >
           Next Game
         </Button>

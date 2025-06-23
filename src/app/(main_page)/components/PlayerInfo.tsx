@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import Timer from "~/components/timer";
 
 interface PlayerInfoProps {
   name: string;
@@ -49,7 +50,7 @@ const PlayerInfo: React.FC<PlayerInfoProps> = ({
           </p>
         </div>
       </div>
-      <div className="text-2xl font-bold">{clockTime}</div>
+      <Timer clockTime={clockTime} />
     </div>
   );
 };

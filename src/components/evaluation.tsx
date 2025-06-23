@@ -77,7 +77,7 @@ const EvaluationBar: React.FC<EvaluationBarProps> = ({
 
   return (
     <div
-      className="relative w-6 bg-accent-foreground overflow-hidden"
+      className="relative w-8 bg-accent-foreground overflow-hidden"
       style={{ height: boardHeight > 0 ? `${boardHeight}px` : "100%" }}
     >
       <motion.div

@@ -12,7 +12,9 @@ export const useChessGame = () => {
     const [actualElo, setActualElo] = useState(0);
     const [currentPgn, setCurrentPgn] = useState("");
     const [whitePlayer, setWhitePlayer] = useState("");
+    const [whitePlayerElo, setWhitePlayerElo] = useState(0);
     const [blackPlayer, setBlackPlayer] = useState("");
+    const [blackPlayerElo, setBlackPlayerElo] = useState(0);
     const [gameLink, setGameLink] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [gameStarted, setGameStarted] = useState(false);
@@ -27,6 +29,7 @@ export const useChessGame = () => {
     const [gameTermination, setGameTermination] = useState<string>("");
     const [gameStage, setGameStage] = useState<"initial" | "guessing" | "revealed">("initial");
     const [boardOrientation, setBoardOrientation] = useState<"white" | "black">("white");
+    const [error, setError] = useState<string | null>(null);
 
     const convertTimeControlToMinutes = (timeControl: string): string => {
         const seconds = parseInt(timeControl);
@@ -39,6 +42,7 @@ export const useChessGame = () => {
     
     const fetchNewGame = useCallback(async () => {
         setIsLoading(true);
+        setError(null);
         try {
             const randomGame = await fetchRandomGame();
             const newGame = new Chess();
@@ -52,7 +56,9 @@ export const useChessGame = () => {
             setHasGuessed(false);
             setGuessedElo(1500);
             setWhitePlayer(randomGame.whitePlayer.username);
+            setWhitePlayerElo(randomGame.whitePlayer.rating);
             setBlackPlayer(randomGame.blackPlayer.username);
+            setBlackPlayerElo(randomGame.blackPlayer.rating);
             setGameLink(randomGame.gameLink);
             const newBmMemberColor = randomGame.whitePlayer.isBMMember ? "white" : "black";
             setBMMemberColor(newBmMemberColor);
@@ -68,13 +74,10 @@ export const useChessGame = () => {
 
             const terminationMatch = randomGame.pgn.match(/Termination\s+"(.+?)"/);
             let terminationMessage = terminationMatch ? terminationMatch[1] : "";
-            const bmMemberUsername = randomGame.whitePlayer.isBMMember ? randomGame.whitePlayer.username : randomGame.blackPlayer.username;
-            const randomPlayerUsername = randomGame.whitePlayer.isBMMember ? randomGame.blackPlayer.username : randomGame.whitePlayer.username;
-            terminationMessage = terminationMessage.replace(bmMemberUsername, "BM Member");
-            terminationMessage = terminationMessage.replace(randomPlayerUsername, "Random Player");
             setGameTermination(terminationMessage);
         } catch (error) {
             console.error("Error fetching new game:", error);
+            setError("Failed to load game. Please try again.");
         } finally {
             setIsLoading(false);
         }
@@ -146,7 +149,9 @@ export const useChessGame = () => {
         actualElo,
         currentPgn,
         whitePlayer,
+        whitePlayerElo,
         blackPlayer,
+        blackPlayerElo,
         gameLink,
         isLoading,
         gameStarted,
@@ -171,6 +176,8 @@ export const useChessGame = () => {
         handleOpenGuessPopup,
         handleCloseGuessPopup,
         handleFlipBoard,
-        setCurrentMove
+        setCurrentMove,
+        error,
+        clearError: () => setError(null),
     };
 }; 

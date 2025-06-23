@@ -1,6 +1,8 @@
 import React from "react";
-import { ArrowLeft, ArrowRight, RefreshCw } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpDown, RefreshCw } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { Sheet, SheetTrigger, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from "~/components/ui/sheet";
+import { Slider } from "~/components/ui/slider";
 
 interface GameControlsProps {
   gameStage: "initial" | "guessing" | "revealed";
@@ -8,8 +10,10 @@ interface GameControlsProps {
   handlePreviousMove: () => void;
   handleNextMove: () => void;
   handleFlipBoard: () => void;
-  handleOpenGuessPopup: () => void;
   handleNextGameWithReset: () => void;
+  guessedElo: number;
+  setGuessedElo: (elo: number) => void;
+  handleGuess: () => void;
 }
 
 const GameControls: React.FC<GameControlsProps> = ({
@@ -18,8 +22,10 @@ const GameControls: React.FC<GameControlsProps> = ({
   handlePreviousMove,
   handleNextMove,
   handleFlipBoard,
-  handleOpenGuessPopup,
   handleNextGameWithReset,
+  guessedElo,
+  setGuessedElo,
+  handleGuess,
 }) => {
   return (
     <div className="flex items-center justify-center gap-2">
@@ -27,29 +33,55 @@ const GameControls: React.FC<GameControlsProps> = ({
         <>
           <Button
             onClick={handlePreviousMove}
-            className="p-2"
-            variant="ghost"
+            className="p-2 border border-border"
+            variant="outline"
           >
             <ArrowLeft className="h-6 w-6" />
           </Button>
-          <Button onClick={handleNextMove} className="p-2" variant="ghost">
+          <Button onClick={handleNextMove} className="p-2 border border-border" variant="outline">
             <ArrowRight className="h-6 w-6" />
           </Button>
-          <Button onClick={handleFlipBoard} className="p-2" variant="ghost">
-            <RefreshCw className="h-6 w-6" />
+          <Button onClick={handleFlipBoard} className="p-2 border border-border" variant="outline">
+            <ArrowUpDown className="h-6 w-6" />
           </Button>
-          <Button
-            onClick={handleOpenGuessPopup}
-            className="w-48 rounded-lg bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-          >
-            Guess the ELO
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button className="w-48 rounded-lg px-4 py-2 font-bold">
+                Guess the ELO
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="bottom" className="rounded-t-lg">
+              <SheetHeader>
+                <SheetTitle>Guess the ELO</SheetTitle>
+              </SheetHeader>
+              <div className="my-6 px-6">
+                <Slider
+                  min={500}
+                  max={2500}
+                  step={50}
+                  value={[guessedElo]}
+                  onValueChange={(value) => setGuessedElo(value[0])}
+                  className="mb-4"
+                />
+                <div className="mb-4 text-center text-lg">
+                  Guessed Elo: <span className="font-bold">{guessedElo}</span>
+                </div>
+              </div>
+              <SheetFooter>
+                <SheetClose asChild>
+                  <Button className="w-full" onClick={handleGuess}>
+                    Submit Guess
+                  </Button>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </>
       )}
       {gameStage === "revealed" && (
         <Button
           onClick={handleNextGameWithReset}
-          className="w-48 rounded-lg bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-600"
+          className="w-48 rounded-lg px-4 py-2 font-bold"
         >
           Next Game
         </Button>

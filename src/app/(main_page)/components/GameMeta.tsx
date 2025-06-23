@@ -13,27 +13,27 @@ interface GameMetaProps {
 
 const GameMeta: React.FC<GameMetaProps> = ({
   gameDate,
-  gameTime,
+  gameTime, 
   timeControl,
   gameResult,
   gameStage,
   gameTermination,
-  gameLink,
+  gameLink
 }) => {
   return (
     <div className="space-y-3 text-sm">
       <div className="flex justify-between">
-        <span className="flex items-center gap-2 text-gray-400">
+        <span className="flex items-center gap-2">
           <Calendar size={16} />
           {gameDate}
         </span>
-        <span className="flex items-center gap-2 text-gray-400">
+        <span className="flex items-center gap-2">
           <Clock size={16} />
           {gameTime}
         </span>
       </div>
       <div className="flex justify-between">
-        <span className="flex items-center gap-2 text-gray-400">
+        <span className="flex items-center gap-2">
           <Trophy size={16} />
           {timeControl}
         </span>
@@ -41,7 +41,7 @@ const GameMeta: React.FC<GameMetaProps> = ({
           href={gameLink}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-blue-400 hover:underline"
+          className="flex items-center gap-2 hover:underline"
         >
           <LinkIcon size={16} />
           Game Link
@@ -49,11 +49,8 @@ const GameMeta: React.FC<GameMetaProps> = ({
       </div>
       {gameStage === "revealed" && (
         <div className="pt-2">
-          <p className="text-gray-400">
-            <span className="font-bold">Result:</span> {gameResult}
-          </p>
-          <p className="text-gray-400">
-            <span className="font-bold">Termination:</span> {gameTermination}
+          <p>
+            <span className="font-bold">Result:</span> {gameResult} {`(${gameTermination})`}
           </p>
         </div>
       )}

@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Medal, Trophy } from "lucide-react";
+import {
+  Medal,
+  Trophy,
+  ChevronLeft,
+  ChevronRight,
+  RotateCcw,
+  ArrowUpDown,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 import ChessViewer from "~/components/board/board";
 import { useChessGame } from "~/hooks/use-chess-game";
@@ -10,6 +17,8 @@ import PlayerInfo from "./PlayerInfo";
 import GameMeta from "./GameMeta";
 import MoveList from "./MoveList";
 import { Slider } from "~/components/ui/slider";
+import { toast } from "sonner";
+import { Separator } from "~/components/ui/separator";
 
 export default function GTEPage() {
   const {
@@ -17,17 +26,16 @@ export default function GTEPage() {
     currentMove,
     guessedElo,
     setGuessedElo,
-    hasGuessed,
     actualElo,
     whitePlayer,
     blackPlayer,
+    whitePlayerElo,
+    blackPlayerElo,
     gameLink,
     isLoading,
     gameStarted,
-    bmMemberColor,
     clockTimes,
     gameResult,
-    showGuessPopup,
     gameDate,
     gameTime,
     timeControl,
@@ -42,8 +50,9 @@ export default function GTEPage() {
     handleGuess,
     handleStartGuessing,
     handleOpenGuessPopup,
-    handleCloseGuessPopup,
     handleFlipBoard,
+    clearError,
+    error,
   } = useChessGame();
 
   const [isMobile, setIsMobile] = useState(false);
@@ -72,6 +81,13 @@ export default function GTEPage() {
     };
   }, [handlePreviousMove, handleNextMove]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      clearError();
+    }
+  }, [error, clearError]);
+
   const getCurrentClockTime = (position: "top" | "bottom") => {
     const isWhiteBottom = boardOrientation === "white";
     const index =
@@ -82,17 +98,27 @@ export default function GTEPage() {
 
   const getPlayerDisplayName = (position: "top" | "bottom"): string => {
     const isWhiteBottom = boardOrientation === "white";
-    const isPlayerOne = (position === "bottom" && isWhiteBottom) || (position === "top" && !isWhiteBottom);
+    const isPlayerOne =
+      (position === "bottom" && isWhiteBottom) ||
+      (position === "top" && !isWhiteBottom);
 
     if (gameStage === "revealed") {
-      if (bmMemberColor === "white") {
-        return isPlayerOne ? whitePlayer || "" : blackPlayer || "";
-      } else {
-        return isPlayerOne ? blackPlayer || "" : whitePlayer || "";
-      }
+      return isPlayerOne ? whitePlayer || "" : blackPlayer || "";
     }
     // Before reveal, show Player 1/Player 2
     return isPlayerOne ? "Player 1" : "Player 2";
+  };
+
+  const getPlayerElo = (position: "top" | "bottom"): number | null => {
+    const isWhiteBottom = boardOrientation === "white";
+    const isPlayerOne =
+      (position === "bottom" && isWhiteBottom) ||
+      (position === "top" && !isWhiteBottom);
+
+    if (gameStage === "revealed") {
+      return isPlayerOne ? whitePlayerElo : blackPlayerElo;
+    }
+    return null;
   };
 
   const handleFenChange = useCallback((fen: string) => {
@@ -101,8 +127,8 @@ export default function GTEPage() {
 
   if (isMobile) {
     return (
-      <div className="flex h-screen w-screen flex-col items-center justify-between bg-gray-100 p-4">
-        <div className="flex w-full max-w-md items-center justify-between rounded-lg bg-gray-800 p-2 text-white shadow-md">
+      <div className="flex h-screen w-screen flex-col items-center p-4">
+        <div className="flex w-full max-w-md items-center justify-center rounded-lg">
           <PlayerInfo
             name={getPlayerDisplayName("top")}
             color={boardOrientation === "white" ? "black" : "white"}
@@ -111,18 +137,27 @@ export default function GTEPage() {
           />
         </div>
 
-        <div className="flex flex-col items-center gap-4 py-4">
-          <div className="w-full max-w-md">
-            <ChessViewer
-              pgn={game.pgn()}
-              currentMove={currentMove}
-              onMoveChange={handleMoveSelect}
-              boardOrientation={boardOrientation}
-              onFenChange={handleFenChange}
-              isGameFetched={gameStarted}
-            />
-          </div>
+        <div className="w-full max-w-md">
+          <ChessViewer
+            pgn={game.pgn()}
+            currentMove={currentMove}
+            onMoveChange={handleMoveSelect}
+            boardOrientation={boardOrientation}
+            onFenChange={handleFenChange}
+            isGameFetched={gameStarted}
+          />
+        </div>
 
+        <div className="flex w-full max-w-md items-center justify-between rounded-lg">
+          <PlayerInfo
+            name={getPlayerDisplayName("bottom")}
+            color={boardOrientation === "white" ? "white" : "black"}
+            clockTime={getCurrentClockTime("bottom")}
+            position="bottom"
+          />
+        </div>
+
+        <div className="flex flex-col items-center mt-4 mb-4 gap-4 w-full border border-border rounded-lg p-4">
           {gameStage !== "initial" && (
             <div className="w-full max-w-md">
               <GameControls
@@ -131,14 +166,33 @@ export default function GTEPage() {
                 handlePreviousMove={handlePreviousMove}
                 handleNextMove={handleNextMove}
                 handleFlipBoard={handleFlipBoard}
-                handleOpenGuessPopup={handleOpenGuessPopup}
                 handleNextGameWithReset={handleNextGameWithReset}
+                guessedElo={guessedElo}
+                setGuessedElo={setGuessedElo}
+                handleGuess={handleGuess}
               />
             </div>
           )}
 
           {gameStage !== "initial" ? (
             <div className="w-full max-w-md">
+              {gameStage === "revealed" && (
+                <div className="mb-4 rounded-lg border border-green-400 bg-green-50 p-4 text-center">
+                  <div className="text-lg font-bold mb-1">
+                    Your Guess:{" "}
+                    <span className="text-primary">{guessedElo}</span>
+                  </div>
+                  <div className="text-lg mb-1">
+                    Actual Elo: <span className="font-bold">{actualElo}</span>
+                  </div>
+                  <div className="text-lg">
+                    Score:{" "}
+                    <span className="font-bold">
+                      {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
+                    </span>
+                  </div>
+                </div>
+              )}
               <MoveList
                 pgn={game.pgn()}
                 currentMove={currentMove}
@@ -146,7 +200,7 @@ export default function GTEPage() {
               />
             </div>
           ) : (
-            <div className="w-full max-w-md rounded-lg bg-gray-800 p-4 text-center text-white shadow-md">
+            <div className="w-full max-w-md rounded-lg text-center">
               <h2 className="mb-2 text-xl font-bold">GUESS THE ELO</h2>
               <p className="mb-4 text-sm">
                 Guess the Elo is a fun game where you try to guess the average
@@ -155,7 +209,7 @@ export default function GTEPage() {
               </p>
               <Button
                 onClick={handleStartGuessing}
-                className="w-full rounded-lg bg-white px-4 py-2 font-bold text-gray-800 hover:bg-gray-200"
+                className="w-full rounded-lg px-4 py-2 font-bold"
                 disabled={isLoading || gameStage !== "initial"}
               >
                 {isLoading ? "Loading..." : "START GUESSING"}
@@ -163,31 +217,23 @@ export default function GTEPage() {
             </div>
           )}
         </div>
-
-        <div className="flex w-full max-w-md items-center justify-between rounded-lg bg-gray-800 p-2 text-white shadow-md">
-          <PlayerInfo
-            name={getPlayerDisplayName("bottom")}
-            color={boardOrientation === "white" ? "white" : "black"}
-            clockTime={getCurrentClockTime("bottom")}
-            position="bottom"
-          />
-        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-8">
+    <div className="flex min-h-screen items-center justify-center p-8">
       <div className="grid w-full max-w-7xl grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Left Column */}
         <div className="flex flex-col justify-center">
           <PlayerInfo
             name={getPlayerDisplayName("top")}
+            elo={getPlayerElo("top")}
             color={boardOrientation === "white" ? "black" : "white"}
             clockTime={getCurrentClockTime("top")}
             position="top"
           />
-          <div className="my-2 h-max w-full">
+          <div className="my-1 h-max w-full">
             <ChessViewer
               pgn={game.pgn()}
               currentMove={currentMove}
@@ -199,45 +245,72 @@ export default function GTEPage() {
           </div>
           <PlayerInfo
             name={getPlayerDisplayName("bottom")}
+            elo={getPlayerElo("bottom")}
             color={boardOrientation === "white" ? "white" : "black"}
             clockTime={getCurrentClockTime("bottom")}
             position="bottom"
           />
+
+          {/* Controls Bar */}
+          <div className="mt-2 h-12 flex w-full items-center justify-between rounded-lg overflow-hidden">
+            <Button
+              className="flex-1 h-full flex items-center justify-cente rounded-r-none transition-colors"
+              onClick={handlePreviousMove}
+              aria-label="Previous Move"
+            >
+              <ChevronLeft size={32} />
+            </Button>
+            <Button
+              className="flex-1 h-full flex items-center justify-center py-3 rounded-none transition-colors border-x"
+              onClick={handleFlipBoard}
+              aria-label="Flip Board"
+              title=""
+            >
+              <ArrowUpDown size={28} />
+            </Button>
+            <Button
+              className="flex-1 h-full flex items-center justify-center rounded-l-none transition-colors"
+              onClick={handleNextMove}
+              aria-label="Next Move"
+            >
+              <ChevronRight size={32} />
+            </Button>
+          </div>
         </div>
 
         {/* Right Column */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
           {gameStage === "initial" && (
             <>
-              <div className="rounded-lg bg-gray-800 p-6 text-white">
+              <div className="rounded-lg border border-border p-6">
                 <h2 className="mb-4 text-2xl font-bold uppercase">
                   Guess the Elo
                 </h2>
-                <p className="mb-6 text-gray-300">
+                <p className="mb-6">
                   Guess the Elo is a fun game where you try to guess the average
                   Elo rating of two chess players based on their gameplay. Can
                   you accurately estimate their skill level?
                 </p>
                 <Button
                   onClick={handleStartGuessing}
-                  className="w-full rounded-md bg-white py-3 text-lg font-bold uppercase text-gray-800 hover:bg-gray-200"
+                  className="w-full rounded-md py-3"
                   disabled={isLoading}
                 >
                   {isLoading ? "Loading..." : "Start Guessing"}
                 </Button>
               </div>
-              <div className="rounded-lg bg-gray-800 p-6 text-white">
+              <div className="rounded-lg border border-border p-6">
                 <h2 className="mb-4 text-2xl font-bold uppercase">
                   Leaderboard
                 </h2>
-                <p className="text-gray-300">Coming Soon...</p>
+                <p className="">Coming Soon...</p>
               </div>
             </>
           )}
 
           {(gameStage === "guessing" || gameStage === "revealed") && (
             <>
-              <div className="rounded-lg bg-gray-800 p-6 text-white">
+              <div className="rounded-lg border border-border p-6">
                 <h2 className="mb-4 text-2xl font-bold uppercase">
                   Guess the Elo
                 </h2>
@@ -251,49 +324,64 @@ export default function GTEPage() {
                   disabled={gameStage === "revealed"}
                 />
                 <div className="mb-6 text-center text-lg">
-                  Guessed Elo:{" "}
-                  <span className="font-bold">{guessedElo}</span>
+                  Guessed Elo: <span className="font-bold">{guessedElo}</span>
                 </div>
                 <Button
                   onClick={handleGuess}
-                  className="w-full rounded-md bg-white py-3 text-lg font-bold uppercase text-gray-800 hover:bg-gray-200"
+                  className="w-full rounded-md py-3"
                   disabled={gameStage === "revealed"}
+                  hidden={gameStage === "revealed"}
                 >
                   Submit Guess
                 </Button>
                 {gameStage === "revealed" && (
-                   <div className="mt-4 text-center">
-                    <p>Actual Elo: {actualElo}</p>
-                    <p className="font-bold">
-                      Score:{" "}
-                      {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
-                    </p>
+                  <div className="mt-4 text-center">
                     <Button
                       onClick={handleNextGameWithReset}
-                      className="mt-4 w-full rounded-md bg-green-500 py-3 text-lg font-bold uppercase text-white hover:bg-green-600"
+                      className="mt-4 w-full rounded-md py-3"
                     >
                       Next Game
                     </Button>
                   </div>
                 )}
               </div>
-              <div className="rounded-lg bg-gray-800 p-6 text-white">
+              <div className="rounded-lg border border-border p-6">
                 <GameMeta
-                    gameDate={gameDate}
-                    gameTime={gameTime}
-                    timeControl={timeControl}
-                    gameResult={gameResult}
-                    gameStage={gameStage}
-                    gameTermination={gameTermination}
-                    gameLink={gameLink}
-                  />
+                  gameDate={gameDate}
+                  gameTime={gameTime}
+                  timeControl={timeControl}
+                  gameResult={gameResult}
+                  gameStage={gameStage}
+                  gameTermination={gameTermination}
+                  gameLink={gameLink}
+                />
               </div>
-              <div className="rounded-lg bg-gray-800 p-6 text-white">
-                 <MoveList
-                    pgn={game.pgn()}
-                    currentMove={currentMove}
-                    onMoveChange={handleMoveSelect}
-                  />
+              <div className="rounded-lg border border-border p-6">
+                {gameStage === "revealed" && (
+                  <div className="mb-4 rounded-lg border border-green-400 bg-green-50 p-4 text-center">
+                    <div className="flex gap-4 w-full justify-center">
+                      <div className="text-lg font-bold mb-1">
+                        Your Guess:{" "}
+                        <span className="text-primary">{guessedElo}</span>
+                      </div>
+                      <div className="text-lg mb-1">
+                        Actual Elo:{" "}
+                        <span className="font-bold">{actualElo}</span>
+                      </div>
+                    </div>
+                    <div className="text-lg">
+                      Score:{" "}
+                      <span className="font-bold">
+                        {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <MoveList
+                  pgn={game.pgn()}
+                  currentMove={currentMove}
+                  onMoveChange={handleMoveSelect}
+                />
               </div>
             </>
           )}

@@ -148,7 +148,7 @@ export default function ChessBoard({
   }, []);
 
   return (
-    <div className={`w-full h-full flex items-start gap-1`}>
+    <div className={`w-full h-full flex items-start gap-2`}>
       <div className="flex-none h-full">
         <EvaluationBar
           fen={game.fen()}

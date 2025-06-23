@@ -61,8 +61,6 @@ export async function fetchRandomGame(): Promise<Game> {
     chessUsername =
       frequentUsers[Math.floor(Math.random() * frequentUsers.length)];
 
-    console.log(`Fetching games for player: ${chessUsername}`);
-
     const archivesResponse = await axios.get(
       `https://api.chess.com/pub/player/${chessUsername}/games/archives`,
     );

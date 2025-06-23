@@ -1,24 +1,15 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, memo } from "react";
-import {
-  Trophy,
-  Medal,
-  Lock,
-  ArrowLeft,
-  ArrowRight,
-  Link,
-  Calendar,
-  Clock,
-} from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Medal, Trophy } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import ChessViewer from "~/components/board/board";
 import { useChessGame } from "~/hooks/use-chess-game";
 import GameControls from "./GameControls";
 import PlayerInfo from "./PlayerInfo";
 import GameMeta from "./GameMeta";
-import GuessPopup from "./GuessPopup";
 import MoveList from "./MoveList";
+import { Slider } from "~/components/ui/slider";
 
 export default function GTEPage() {
   const {
@@ -59,7 +50,7 @@ export default function GTEPage() {
 
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1024);
     };
     checkMobile();
     window.addEventListener("resize", checkMobile);
@@ -89,112 +80,205 @@ export default function GTEPage() {
     return clockTimes[index] || "00:00";
   };
 
-  const getPlayerDisplayName = (position: "top" | "bottom") => {
-    const isBmMemberBottom = boardOrientation === bmMemberColor;
-    if (gameStage === "initial") {
-      return (position === "bottom") === isBmMemberBottom
-        ? "BM Member"
-        : "Random Noob";
-    } else if (gameStage === "guessing") {
-      return (position === "bottom") === isBmMemberBottom
-        ? "BM Member"
-        : "Random Player";
-    } else {
-      return (position === "bottom") === isBmMemberBottom
-        ? bmMemberColor === "white"
-          ? whitePlayer
-          : blackPlayer
-        : bmMemberColor === "white"
-        ? blackPlayer
-        : whitePlayer;
+  const getPlayerDisplayName = (position: "top" | "bottom"): string => {
+    const isWhiteBottom = boardOrientation === "white";
+    const isPlayerOne = (position === "bottom" && isWhiteBottom) || (position === "top" && !isWhiteBottom);
+
+    if (gameStage === "revealed") {
+      if (bmMemberColor === "white") {
+        return isPlayerOne ? whitePlayer || "" : blackPlayer || "";
+      } else {
+        return isPlayerOne ? blackPlayer || "" : whitePlayer || "";
+      }
     }
+    // Before reveal, show Player 1/Player 2
+    return isPlayerOne ? "Player 1" : "Player 2";
   };
 
   const handleFenChange = useCallback((fen: string) => {
-    // Use the FEN here if needed, but don't set it as state
-    // console.log("Current FEN:", fen);
+    // This function is passed to ChessViewer but can be empty for now
   }, []);
 
-  return (
-    <div className="flex h-screen w-screen flex-col bg-gray-100 dark:bg-gray-900">
-      <div className="flex flex-1 flex-col items-center justify-center p-4">
-        <div className="flex w-full max-w-7xl flex-1 flex-col items-center justify-center gap-4 lg:flex-row">
-          <div className="flex h-full w-full flex-col items-center justify-between gap-4 lg:w-auto">
-            <div className="flex w-full items-center justify-between rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
-              <PlayerInfo
-                name={getPlayerDisplayName("top")}
-                color={boardOrientation === "white" ? "white" : "black"}
-                clockTime={getCurrentClockTime("top")}
-                icon={<Medal className="text-neon-green" size={24} />}
-              />
-            </div>
-            <div className="relative flex-1">
-              <div className="flex h-full flex-col items-center justify-center gap-4">
-                <div className="flex-1 h-full w-full">
-                  <ChessViewer
-                    pgn={game.pgn()}
-                    currentMove={currentMove}
-                    onMoveChange={handleMoveSelect}
-                    boardOrientation={boardOrientation}
-                    onFenChange={handleFenChange}
-                    isGameFetched={gameStarted}
-                  />
-                </div>
-                {gameStage !== "initial" && !isMobile && (
-                  <GameControls
-                    gameStage={gameStage}
-                    isMobile={isMobile}
-                    handlePreviousMove={handlePreviousMove}
-                    handleNextMove={handleNextMove}
-                    handleFlipBoard={handleFlipBoard}
-                    handleOpenGuessPopup={handleOpenGuessPopup}
-                    handleNextGameWithReset={handleNextGameWithReset}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="flex w-full items-center justify-between rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
-              <PlayerInfo
-                name={getPlayerDisplayName("bottom")}
-                color={boardOrientation === "white" ? "black" : "white"}
-                clockTime={getCurrentClockTime("bottom")}
-                icon={<Trophy className="text-neon-green" size={24} />}
-              />
-            </div>
+  if (isMobile) {
+    return (
+      <div className="flex h-screen w-screen flex-col items-center justify-between bg-gray-100 p-4">
+        <div className="flex w-full max-w-md items-center justify-between rounded-lg bg-gray-800 p-2 text-white shadow-md">
+          <PlayerInfo
+            name={getPlayerDisplayName("top")}
+            color={boardOrientation === "white" ? "black" : "white"}
+            clockTime={getCurrentClockTime("top")}
+            position="top"
+          />
+        </div>
+
+        <div className="flex flex-col items-center gap-4 py-4">
+          <div className="w-full max-w-md">
+            <ChessViewer
+              pgn={game.pgn()}
+              currentMove={currentMove}
+              onMoveChange={handleMoveSelect}
+              boardOrientation={boardOrientation}
+              onFenChange={handleFenChange}
+              isGameFetched={gameStarted}
+            />
           </div>
-          <div className="w-full lg:w-96 flex flex-col gap-4">
-            {gameStage !== "initial" && (
+
+          {gameStage !== "initial" && (
+            <div className="w-full max-w-md">
+              <GameControls
+                gameStage={gameStage}
+                isMobile={isMobile}
+                handlePreviousMove={handlePreviousMove}
+                handleNextMove={handleNextMove}
+                handleFlipBoard={handleFlipBoard}
+                handleOpenGuessPopup={handleOpenGuessPopup}
+                handleNextGameWithReset={handleNextGameWithReset}
+              />
+            </div>
+          )}
+
+          {gameStage !== "initial" ? (
+            <div className="w-full max-w-md">
               <MoveList
                 pgn={game.pgn()}
                 currentMove={currentMove}
                 onMoveChange={handleMoveSelect}
               />
-            )}
-            <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 flex-1 flex flex-col">
-              <h2 className="mb-4 text-xl font-bold">Start New Game</h2>
-              <div className="flex-1 flex flex-col items-center justify-center text-center">
-                <p className="mb-4 text-lg">
-                  Guess the ELO of the players based on the game.
+            </div>
+          ) : (
+            <div className="w-full max-w-md rounded-lg bg-gray-800 p-4 text-center text-white shadow-md">
+              <h2 className="mb-2 text-xl font-bold">GUESS THE ELO</h2>
+              <p className="mb-4 text-sm">
+                Guess the Elo is a fun game where you try to guess the average
+                Elo rating of two chess players based on their gameplay. Can you
+                accurately estimate their skill level?
+              </p>
+              <Button
+                onClick={handleStartGuessing}
+                className="w-full rounded-lg bg-white px-4 py-2 font-bold text-gray-800 hover:bg-gray-200"
+                disabled={isLoading || gameStage !== "initial"}
+              >
+                {isLoading ? "Loading..." : "START GUESSING"}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="flex w-full max-w-md items-center justify-between rounded-lg bg-gray-800 p-2 text-white shadow-md">
+          <PlayerInfo
+            name={getPlayerDisplayName("bottom")}
+            color={boardOrientation === "white" ? "white" : "black"}
+            clockTime={getCurrentClockTime("bottom")}
+            position="bottom"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-8">
+      <div className="grid w-full max-w-7xl grid-cols-1 gap-4 lg:grid-cols-2">
+        {/* Left Column */}
+        <div className="flex flex-col justify-center">
+          <PlayerInfo
+            name={getPlayerDisplayName("top")}
+            color={boardOrientation === "white" ? "black" : "white"}
+            clockTime={getCurrentClockTime("top")}
+            position="top"
+          />
+          <div className="my-2 h-max w-full">
+            <ChessViewer
+              pgn={game.pgn()}
+              currentMove={currentMove}
+              onMoveChange={handleMoveSelect}
+              boardOrientation={boardOrientation}
+              onFenChange={handleFenChange}
+              isGameFetched={gameStarted}
+            />
+          </div>
+          <PlayerInfo
+            name={getPlayerDisplayName("bottom")}
+            color={boardOrientation === "white" ? "white" : "black"}
+            clockTime={getCurrentClockTime("bottom")}
+            position="bottom"
+          />
+        </div>
+
+        {/* Right Column */}
+        <div className="flex flex-col gap-4">
+          {gameStage === "initial" && (
+            <>
+              <div className="rounded-lg bg-gray-800 p-6 text-white">
+                <h2 className="mb-4 text-2xl font-bold uppercase">
+                  Guess the Elo
+                </h2>
+                <p className="mb-6 text-gray-300">
+                  Guess the Elo is a fun game where you try to guess the average
+                  Elo rating of two chess players based on their gameplay. Can
+                  you accurately estimate their skill level?
                 </p>
                 <Button
                   onClick={handleStartGuessing}
-                  className="w-full rounded-lg bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-                  disabled={isLoading || gameStage !== 'initial'}
+                  className="w-full rounded-md bg-white py-3 text-lg font-bold uppercase text-gray-800 hover:bg-gray-200"
+                  disabled={isLoading}
                 >
                   {isLoading ? "Loading..." : "Start Guessing"}
                 </Button>
               </div>
-            </div>
-            <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 flex-1">
-              <h2 className="mb-4 text-xl font-bold">Game Information</h2>
-              {gameStage === "initial" && (
-                <div className="flex items-center justify-center h-full text-gray-500">
-                  <p>Game information will appear here.</p>
+              <div className="rounded-lg bg-gray-800 p-6 text-white">
+                <h2 className="mb-4 text-2xl font-bold uppercase">
+                  Leaderboard
+                </h2>
+                <p className="text-gray-300">Coming Soon...</p>
+              </div>
+            </>
+          )}
+
+          {(gameStage === "guessing" || gameStage === "revealed") && (
+            <>
+              <div className="rounded-lg bg-gray-800 p-6 text-white">
+                <h2 className="mb-4 text-2xl font-bold uppercase">
+                  Guess the Elo
+                </h2>
+                <Slider
+                  min={500}
+                  max={2500}
+                  step={50}
+                  value={[guessedElo]}
+                  onValueChange={(value) => setGuessedElo(value[0])}
+                  className="my-6"
+                  disabled={gameStage === "revealed"}
+                />
+                <div className="mb-6 text-center text-lg">
+                  Guessed Elo:{" "}
+                  <span className="font-bold">{guessedElo}</span>
                 </div>
-              )}
-              {gameStage !== "initial" && (
-                <>
-                  <GameMeta
+                <Button
+                  onClick={handleGuess}
+                  className="w-full rounded-md bg-white py-3 text-lg font-bold uppercase text-gray-800 hover:bg-gray-200"
+                  disabled={gameStage === "revealed"}
+                >
+                  Submit Guess
+                </Button>
+                {gameStage === "revealed" && (
+                   <div className="mt-4 text-center">
+                    <p>Actual Elo: {actualElo}</p>
+                    <p className="font-bold">
+                      Score:{" "}
+                      {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
+                    </p>
+                    <Button
+                      onClick={handleNextGameWithReset}
+                      className="mt-4 w-full rounded-md bg-green-500 py-3 text-lg font-bold uppercase text-white hover:bg-green-600"
+                    >
+                      Next Game
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <div className="rounded-lg bg-gray-800 p-6 text-white">
+                <GameMeta
                     gameDate={gameDate}
                     gameTime={gameTime}
                     timeControl={timeControl}
@@ -203,56 +287,18 @@ export default function GTEPage() {
                     gameTermination={gameTermination}
                     gameLink={gameLink}
                   />
-
-                  {gameStage === "guessing" && isMobile && (
-                    <div className="mt-6 text-center">
-                      <Button
-                        onClick={handleOpenGuessPopup}
-                        className="w-full rounded-lg bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
-                      >
-                        Guess the ELO
-                      </Button>
-                    </div>
-                  )}
-
-                  {gameStage === "revealed" && (
-                    <div className="mt-6">
-                      <h3 className="text-lg font-bold">ELO Rating</h3>
-                      <div className="mt-2 text-center">
-                        <p>Your Guess: {guessedElo}</p>
-                        <p>Actual Elo: {actualElo}</p>
-                        <p className="font-bold">
-                          Score: {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
-                        </p>
-                      </div>
-                      {isMobile && (
-                        <div className="mt-4 flex justify-center">
-                          <Button
-                            onClick={handleNextGameWithReset}
-                            className="w-full rounded-lg bg-green-500 px-4 py-2 font-bold text-white hover:bg-green-600"
-                          >
-                            Next Game
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
+              </div>
+              <div className="rounded-lg bg-gray-800 p-6 text-white">
+                 <MoveList
+                    pgn={game.pgn()}
+                    currentMove={currentMove}
+                    onMoveChange={handleMoveSelect}
+                  />
+              </div>
+            </>
+          )}
         </div>
       </div>
-      <GuessPopup
-        open={showGuessPopup}
-        guessedElo={guessedElo}
-        setGuessedElo={setGuessedElo}
-        onCancel={handleCloseGuessPopup}
-        onSubmit={() => {
-          handleGuess();
-          handleCloseGuessPopup();
-        }}
-      />
     </div>
   );
 }

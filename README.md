@@ -1,8 +1,6 @@
-# ♟️ GTE Chess Explorer
+# ♟️ Guess The Elo
 
 A modern, interactive chess game explorer and analysis tool built with Next.js, featuring a beautiful UI, real-time move lists, sound effects, and advanced customization. Perfect for studying games, playing against yourself, or sharing chess moments.
-
-![GTE Chess Preview](public/file.svg)
 
 ## ✨ Features
 

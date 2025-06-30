@@ -43,7 +43,7 @@ A modern, interactive chess game explorer and analysis tool built with Next.js, 
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/hellofaizan/gte.git
+   git clone https://github.com/hellofaizan/GuessELo.git
    cd gte
    ```
 
@@ -142,7 +142,6 @@ gte/
 
 - **For Study**: Use the move list and metadata to analyze famous games
 - **For Fun**: Try the random game feature or experiment with different themes
-- **For Accessibility**: Use keyboard navigation and screen reader features (improving soon!)
 
 ## 🤝 Contributing
 
@@ -159,7 +158,6 @@ We welcome contributions! Please feel free to submit a Pull Request. For major c
 - [chess.js](https://github.com/jhlywa/chess.js) for chess logic
 - [Radix UI](https://www.radix-ui.com/) for accessible UI components
 - [Tailwind CSS](https://tailwindcss.com/) for utility-first CSS
-- [Onion UI Docs](https://onionui.github.io/docs/apps/logotweak) for inspiration on features and accessibility
 
 ## 📞 Support
 

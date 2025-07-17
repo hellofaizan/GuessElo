@@ -19,6 +19,7 @@ import MoveList from "./MoveList";
 import { Slider } from "~/components/ui/slider";
 import { toast } from "sonner";
 import { Separator } from "~/components/ui/separator";
+import ShareGame from "~/components/ShareGame";
 
 export default function GTEPage() {
   const {
@@ -337,13 +338,14 @@ export default function GTEPage() {
                   Submit Guess
                 </Button>
                 {gameStage === "revealed" && (
-                  <div className="mt-4 text-center">
+                  <div className="mt-4 text-center w-full flex flex-col gap-2">
                     <Button
                       onClick={handleNextGameWithReset}
                       className="mt-4 w-full rounded-md py-3 cursor-pointer"
                     >
                       Next Game
                     </Button>
+                    <ShareGame gameLink={gameLink} pgn={game.pgn()} playerA={whitePlayer} playerB={blackPlayer} />
                   </div>
                 )}
               </div>

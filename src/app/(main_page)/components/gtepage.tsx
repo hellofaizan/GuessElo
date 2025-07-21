@@ -20,6 +20,12 @@ import { Slider } from "~/components/ui/slider";
 import { toast } from "sonner";
 import { Separator } from "~/components/ui/separator";
 import ShareGame from "~/components/ShareGame";
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
+import { Chess } from "chess.js";
+import { PGNClockStripper } from "~/actions/getclock";
+import { SelectValue } from "~/components/ui/select";
 
 export default function GTEPage() {
   const {
@@ -54,9 +60,30 @@ export default function GTEPage() {
     handleFlipBoard,
     clearError,
     error,
+    setGame,
+    setWhitePlayer,
+    setBlackPlayer,
+    setActualElo,
+    setGameStage,
+    setGameStarted,
+    setCurrentMove,
+    setCurrentClockIndex,
+    setWhitePlayerElo,
+    setBlackPlayerElo,
+    setGameLink,
+    setGameDate,
+    setGameTime,
+    setTimeControl,
+    setGameResult,
+    setGameTermination,
+    setBoardOrientation,
+    setClockTimes,
   } = useChessGame();
 
   const [isMobile, setIsMobile] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [importPgn, setImportPgn] = useState("");
+  const [importError, setImportError] = useState<string | null>(null);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -126,6 +153,80 @@ export default function GTEPage() {
     // This function is passed to ChessViewer but can be empty for now
   }, []);
 
+  // Handler for importing PGN
+  const handleImportPgn = () => {
+    setImportError(null);
+    try {
+      const pgn = importPgn.trim();
+      if (!pgn) {
+        setImportError("Please paste a PGN.");
+        return;
+      }
+      // Extract headers
+      const headerRegex = /\[(.*?)\s+"(.*?)"\]/g;
+      let match;
+      const headers: Record<string, string> = {};
+      while ((match = headerRegex.exec(pgn)) !== null) {
+        headers[match[1]] = match[2];
+      }
+      const whitePlayer = headers["White"] || "White";
+      const blackPlayer = headers["Black"] || "Black";
+      const whitePlayerElo = parseInt(headers["WhiteElo"] || "0", 10);
+      const blackPlayerElo = parseInt(headers["BlackElo"] || "0", 10);
+      const gameLink = headers["Link"] || "";
+      const gameDate = headers["Date"] || "";
+      const gameTime = headers["StartTime"] || "";
+      const timeControl = headers["TimeControl"] || "";
+      const gameResult = headers["Result"] || "";
+      const gameTermination = headers["Termination"] || "";
+      if (!whitePlayerElo || !blackPlayerElo) {
+        setImportError("PGN must include both WhiteElo and BlackElo headers.");
+        return;
+      }
+      const actualElo = Math.round((whitePlayerElo + blackPlayerElo) / 2);
+      // Parse clock times
+      const { strippedPgn, clockTimes } = PGNClockStripper(pgn);
+      // Validate PGN
+      let chess;
+      try {
+        chess = new Chess();
+        chess.loadPgn(strippedPgn); // Use stripped PGN for move validation
+        if (chess.history().length < 8) {
+          setImportError("Game is too short (must have at least 8 moves).");
+          return;
+        }
+      } catch (e) {
+        setImportError("Invalid PGN format.");
+        return;
+      }
+      // Set up state as if a game was fetched
+      setGame(chess);
+      setCurrentMove(0);
+      setCurrentClockIndex(0);
+      setActualElo(actualElo);
+      setGuessedElo(1500);
+      setWhitePlayer(whitePlayer);
+      setWhitePlayerElo(whitePlayerElo);
+      setBlackPlayer(blackPlayer);
+      setBlackPlayerElo(blackPlayerElo);
+      setGameLink(gameLink);
+      setGameDate(gameDate);
+      setGameTime(gameTime);
+      setTimeControl(timeControl);
+      setGameResult(gameResult);
+      setGameTermination(gameTermination);
+      setGameStarted(true);
+      setGameStage("guessing");
+      setBoardOrientation("white");
+      setClockTimes(clockTimes);
+      setImportDialogOpen(false);
+      setImportPgn("");
+      setImportError(null);
+    } catch (e) {
+      setImportError("Failed to import game. Please check your PGN.");
+    }
+  };
+  
   if (isMobile) {
     return (
       <div className="flex h-screen w-screen flex-col items-center p-4">
@@ -256,26 +357,26 @@ export default function GTEPage() {
           {(gameStage === "guessing" || gameStage === "revealed") && (
             <div className="mt-2 h-12 flex w-full items-center justify-between rounded-lg overflow-hidden">
               <Button
-                className="flex-1 h-full flex items-center justify-cente rounded-r-none transition-colors"
+                className="flex-1 h-full flex items-center justify-cente rounded-r-none transition-colors cursor-pointer"
                 onClick={handlePreviousMove}
                 aria-label="Previous Move"
               >
-                <ChevronLeft size={32} />
+                <ChevronLeft size={34} />
               </Button>
               <Button
-                className="flex-1 h-full flex items-center justify-center py-3 rounded-none transition-colors border-x"
+                className="flex-1 h-full flex items-center justify-center py-3 rounded-none transition-colors border-x cursor-pointer"
                 onClick={handleFlipBoard}
                 aria-label="Flip Board"
                 title=""
               >
-                <ArrowUpDown size={28} />
+                <ArrowUpDown size={30} />
               </Button>
               <Button
-                className="flex-1 h-full flex items-center justify-center rounded-l-none transition-colors"
+                className="flex-1 h-full flex items-center justify-center rounded-l-none transition-colors cursor-pointer"
                 onClick={handleNextMove}
                 aria-label="Next Move"
               >
-                <ChevronRight size={32} />
+                <ChevronRight size={34} />
               </Button>
             </div>
           )}
@@ -294,13 +395,51 @@ export default function GTEPage() {
                   Elo rating of two chess players based on their gameplay. Can
                   you accurately estimate their skill level?
                 </p>
-                <Button
-                  onClick={handleStartGuessing}
-                  className="w-full rounded-md py-3 cursor-pointer"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Loading..." : "Start Guessing"}
-                </Button>
+                <div className="flex flex-col gap-2">
+                  <Button
+                    onClick={handleStartGuessing}
+                    className="w-full rounded-md py-3 cursor-pointer"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Loading..." : "Start Guessing"}
+                  </Button>
+                  <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full rounded-md py-3 cursor-pointer"
+                        onClick={() => setImportDialogOpen(true)}
+                      >
+                        Import Game
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle>Import Chess Game (PGN)</DialogTitle>
+                      </DialogHeader>
+                      <div className="mt-2">
+                        <Textarea
+                          value={importPgn}
+                          onChange={e => setImportPgn(e.target.value)}
+                          rows={12}
+                          placeholder="Paste your PGN here..."
+                          className="w-full h-64"
+                        />
+                        {importError && (
+                          <div className="text-red-500 text-sm mt-2">{importError}</div>
+                        )}
+                      </div>
+                      <div className="flex justify-end mt-4 gap-2">
+                        <Button variant="outline" onClick={() => { setImportDialogOpen(false); setImportPgn(""); setImportError(null); }}>
+                          Cancel
+                        </Button>
+                        <Button onClick={handleImportPgn}>
+                          Import & Guess
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
               <div className="rounded-lg border border-border p-6">
                 <h2 className="mb-4 text-2xl font-bold uppercase">
@@ -349,7 +488,7 @@ export default function GTEPage() {
                   </div>
                 )}
               </div>
-              <div className="rounded-lg border border-border p-6">
+              <div className="rounded-lg border border-border p-4 px-6">
                 <GameMeta
                   gameDate={gameDate}
                   gameTime={gameTime}
@@ -362,7 +501,7 @@ export default function GTEPage() {
               </div>
               <div className="rounded-lg border border-border p-6">
                 {gameStage === "revealed" && (
-                  <div className="mb-4 rounded-lg border border-green-400 bg-green-50 p-4 text-center">
+                  <div className="mb-4 rounded-lg border border-green-400 bg-green-50 p-2 text-center">
                     <div className="flex gap-4 w-full justify-center">
                       <div className="text-lg font-bold mb-1">
                         Your Guess:{" "}
@@ -372,12 +511,6 @@ export default function GTEPage() {
                         Actual Elo:{" "}
                         <span className="font-bold">{actualElo}</span>
                       </div>
-                    </div>
-                    <div className="text-lg">
-                      Score:{" "}
-                      <span className="font-bold">
-                        {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
-                      </span>
                     </div>
                   </div>
                 )}

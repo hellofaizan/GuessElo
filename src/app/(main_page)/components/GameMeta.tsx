@@ -48,7 +48,7 @@ const GameMeta: React.FC<GameMetaProps> = ({
         </a>
       </div>
       {gameStage === "revealed" && (
-        <div className="pt-2">
+        <div className="pt-2 text-center">
           <p>
             <span className="font-bold">Result:</span> {gameResult} {`(${gameTermination})`}
           </p>

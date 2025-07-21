@@ -179,5 +179,23 @@ export const useChessGame = () => {
         setCurrentMove,
         error,
         clearError: () => setError(null),
+        // Expose all setters for import feature
+        setGame,
+        setWhitePlayer,
+        setBlackPlayer,
+        setActualElo,
+        setGameStage,
+        setGameStarted,
+        setCurrentClockIndex,
+        setWhitePlayerElo,
+        setBlackPlayerElo,
+        setGameLink,
+        setGameDate,
+        setGameTime,
+        setTimeControl,
+        setGameResult,
+        setGameTermination,
+        setBoardOrientation,
+        setClockTimes,
     };
 }; 

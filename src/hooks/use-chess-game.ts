@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { Chess } from "chess.js";
 import { fetchRandomGame } from "~/actions/chessgames";
+import { calculateScore, ScoreResult } from "~/lib/scoring";
 
 export const useChessGame = () => {
     const [game, setGame] = useState(new Chess());
@@ -30,6 +31,14 @@ export const useChessGame = () => {
     const [gameStage, setGameStage] = useState<"initial" | "guessing" | "revealed">("initial");
     const [boardOrientation, setBoardOrientation] = useState<"white" | "black">("white");
     const [error, setError] = useState<string | null>(null);
+    
+    // New scoring state
+    const [currentScore, setCurrentScore] = useState<ScoreResult | null>(null);
+    const [totalScore, setTotalScore] = useState(0);
+    const [gamesPlayed, setGamesPlayed] = useState(0);
+    const [currentStreak, setCurrentStreak] = useState(0);
+    const [bestStreak, setBestStreak] = useState(0);
+    const [averageScore, setAverageScore] = useState(0);
 
     const convertTimeControlToMinutes = (timeControl: string): string => {
         const seconds = parseInt(timeControl);
@@ -65,6 +74,7 @@ export const useChessGame = () => {
             setBoardOrientation(newBmMemberColor);
             setGameStarted(true);
             setClockTimes(randomGame.clockTimes);
+            setCurrentScore(null); // Reset current score
 
             const header = newGame.header();
             setGameDate(header["Date"] || "");
@@ -113,6 +123,29 @@ export const useChessGame = () => {
 
     const handleGuess = () => {
         setHasGuessed(true);
+        
+        // Calculate score using new scoring system
+        const scoreResult = calculateScore(guessedElo, actualElo);
+        setCurrentScore(scoreResult);
+        
+        // Update statistics
+        const newGamesPlayed = gamesPlayed + 1;
+        const newTotalScore = totalScore + scoreResult.score;
+        const newAverageScore = Math.round(newTotalScore / newGamesPlayed);
+        
+        setGamesPlayed(newGamesPlayed);
+        setTotalScore(newTotalScore);
+        setAverageScore(newAverageScore);
+        
+        // Update streak
+        if (scoreResult.score >= 70) { // Good score threshold
+            const newStreak = currentStreak + 1;
+            setCurrentStreak(newStreak);
+            setBestStreak(Math.max(bestStreak, newStreak));
+        } else {
+            setCurrentStreak(0);
+        }
+        
         setGameStage("revealed");
     };
 
@@ -166,6 +199,13 @@ export const useChessGame = () => {
         gameTermination,
         gameStage,
         boardOrientation,
+        // New scoring properties
+        currentScore,
+        totalScore,
+        gamesPlayed,
+        currentStreak,
+        bestStreak,
+        averageScore,
         handleNextGameWithReset,
         handlePreviousMove,
         handleNextMove,

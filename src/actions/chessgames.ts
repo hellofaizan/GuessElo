@@ -52,6 +52,9 @@ const frequentUsers = [
   'ramswaroop02',
   'krantikari2',
   'prafullsh',
+  'magnus-carlsen',
+  'hikaru-nakamura',
+  'gukesh-dommaraju'
 ];
 
 export async function fetchRandomGame(): Promise<Game> {

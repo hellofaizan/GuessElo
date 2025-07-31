@@ -73,14 +73,11 @@ A modern, interactive chess game explorer and analysis tool built with Next.js, 
 - [x] Responsive, modern UI
 - [x] Dark/Light mode
 - [x] Player clocks and timers
-- [ ] Import PGN (paste/upload)
-- [ ] Export PGN
-- [ ] Custom board and piece Themes
-- [ ] Save/load games to local storage
-- [ ] Shareable game links
+- [x] Import PGN (paste/upload)
+- [x] Export PGN
+- [ ] Scoring and Leaderboard system
 - [ ] Fun randomizer button (load random famous games)
-- [ ] Add more sound and visual themes
-- [ ] Simple animation (piece bounce, highlight last move)
+- [ ] Highlight last move
 - [ ] Cloud save support
 - [ ] Add text overlay or annotation tools
 - [ ] Multiplayer support (online play)

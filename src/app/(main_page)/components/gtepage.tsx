@@ -16,6 +16,8 @@ import GameControls from "./GameControls";
 import PlayerInfo from "./PlayerInfo";
 import GameMeta from "./GameMeta";
 import MoveList from "./MoveList";
+import ScoreDisplay from "~/components/ScoreDisplay";
+import GameStats from "~/components/GameStats";
 import { Slider } from "~/components/ui/slider";
 import { toast } from "sonner";
 import { Separator } from "~/components/ui/separator";
@@ -50,6 +52,12 @@ export default function GTEPage() {
     gameTermination,
     gameStage,
     boardOrientation,
+    currentScore,
+    totalScore,
+    gamesPlayed,
+    currentStreak,
+    bestStreak,
+    averageScore,
     handleNextGameWithReset,
     handlePreviousMove,
     handleNextMove,
@@ -278,21 +286,17 @@ export default function GTEPage() {
 
           {gameStage !== "initial" ? (
             <div className="w-full max-w-md">
-              {gameStage === "revealed" && (
-                <div className="mb-4 rounded-lg border border-green-400 bg-green-50 p-4 text-center">
-                  <div className="text-lg font-bold mb-1">
-                    Your Guess:{" "}
-                    <span className="text-primary">{guessedElo}</span>
-                  </div>
-                  <div className="text-lg mb-1">
-                    Actual Elo: <span className="font-bold">{actualElo}</span>
-                  </div>
-                  <div className="text-lg">
-                    Score:{" "}
-                    <span className="font-bold">
-                      {Math.max(0, 1500 - Math.abs(actualElo - guessedElo))}
-                    </span>
-                  </div>
+              {gameStage === "revealed" && currentScore && (
+                <div className="mb-4">
+                  <ScoreDisplay
+                    scoreResult={currentScore}
+                    guessedElo={guessedElo}
+                    actualElo={actualElo}
+                    currentStreak={currentStreak}
+                    bestStreak={bestStreak}
+                    gamesPlayed={gamesPlayed}
+                    averageScore={averageScore}
+                  />
                 </div>
               )}
               <MoveList
@@ -327,7 +331,7 @@ export default function GTEPage() {
     <div className="flex min-h-screen items-center justify-center p-8">
       <div className="grid w-full max-w-7xl grid-cols-1 gap-4 lg:grid-cols-2">
         {/* Left Column */}
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-top">
           <PlayerInfo
             name={getPlayerDisplayName("top")}
             elo={getPlayerElo("top")}
@@ -383,7 +387,7 @@ export default function GTEPage() {
         </div>
 
         {/* Right Column */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 overflow-y-scroll">
           {gameStage === "initial" && (
             <>
               <div className="rounded-lg border border-border p-6">
@@ -445,13 +449,35 @@ export default function GTEPage() {
                 <h2 className="mb-4 text-2xl font-bold uppercase">
                   Leaderboard
                 </h2>
-                <p className="">Coming Soon...</p>
+                <p className="mb-4 text-gray-600 dark:text-gray-400">
+                  See how you rank against other players
+                </p>
+                <Button
+                  onClick={() => window.location.href = '/leaderboard'}
+                  variant="outline"
+                  className="w-full"
+                >
+                  View Leaderboard
+                </Button>
               </div>
             </>
           )}
 
           {(gameStage === "guessing" || gameStage === "revealed") && (
             <>
+              {/* Game Statistics */}
+              {gamesPlayed > 0 && (
+                <div className="rounded-lg border border-border p-6 mb-4">
+                  <GameStats
+                    gamesPlayed={gamesPlayed}
+                    totalScore={totalScore}
+                    averageScore={averageScore}
+                    currentStreak={currentStreak}
+                    bestStreak={bestStreak}
+                  />
+                </div>
+              )}
+
               <div className="rounded-lg border border-border p-6">
                 <h2 className="mb-4 text-2xl font-bold uppercase">
                   Guess the Elo
@@ -500,18 +526,17 @@ export default function GTEPage() {
                 />
               </div>
               <div className="rounded-lg border border-border p-6">
-                {gameStage === "revealed" && (
-                  <div className="mb-4 rounded-lg border border-green-400 bg-green-50 p-2 text-center">
-                    <div className="flex gap-4 w-full justify-center">
-                      <div className="text-lg font-bold mb-1">
-                        Your Guess:{" "}
-                        <span className="text-primary">{guessedElo}</span>
-                      </div>
-                      <div className="text-lg mb-1">
-                        Actual Elo:{" "}
-                        <span className="font-bold">{actualElo}</span>
-                      </div>
-                    </div>
+                {gameStage === "revealed" && currentScore && (
+                  <div className="mb-4">
+                    <ScoreDisplay
+                      scoreResult={currentScore}
+                      guessedElo={guessedElo}
+                      actualElo={actualElo}
+                      currentStreak={currentStreak}
+                      bestStreak={bestStreak}
+                      gamesPlayed={gamesPlayed}
+                      averageScore={averageScore}
+                    />
                   </div>
                 )}
                 <MoveList

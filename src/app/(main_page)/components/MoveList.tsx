@@ -90,9 +90,9 @@ export default function MoveList({
     }
     return <span>{move.san}</span>;
   };
-
+  
   return (
-    <div className="h-[250px] overflow-y-auto pr-2">
+    <div className="max-h-[780px] overflow-y-auto pr-2">
       <div className="grid grid-cols-[auto_1fr_1fr] gap-x-4 gap-y-2 text-sm">
         {movePairs.map((pair, pairIndex) => (
           <React.Fragment key={pairIndex}>

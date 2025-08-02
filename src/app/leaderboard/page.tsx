@@ -130,8 +130,8 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+      <div className="max-w-7xl mx-auto p-4">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
@@ -147,9 +147,10 @@ export default function LeaderboardPage() {
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <Target className="h-4 w-4" />
                 Total Players
               </CardTitle>
             </CardHeader>
@@ -158,9 +159,10 @@ export default function LeaderboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <TrendingUp className="h-4 w-4" />
                 Games Played Today
               </CardTitle>
             </CardHeader>
@@ -169,9 +171,10 @@ export default function LeaderboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <Award className="h-4 w-4" />
                 Average Score
               </CardTitle>
             </CardHeader>
@@ -180,9 +183,10 @@ export default function LeaderboardPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                <Trophy className="h-4 w-4" />
                 Best Streak
               </CardTitle>
             </CardHeader>
@@ -193,7 +197,7 @@ export default function LeaderboardPage() {
         </div>
 
         {/* Leaderboard */}
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Trophy className="h-5 w-5 text-yellow-500" />
@@ -205,7 +209,7 @@ export default function LeaderboardPage() {
               {leaderboard.map((player, index) => (
                 <div
                   key={player.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-700"
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex items-center justify-center w-8 h-8">

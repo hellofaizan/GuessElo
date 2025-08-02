@@ -148,7 +148,7 @@ export default function ChessBoard({
   }, []);
 
   return (
-    <div className={`w-full h-full flex items-start gap-2`}>
+    <div className={`flex items-start gap-2`}>
       <div className="flex-none h-full">
         <EvaluationBar
           fen={game.fen()}
@@ -157,7 +157,7 @@ export default function ChessBoard({
           boardHeight={boardHeight}
         />
       </div>
-      <div className="flex-1 h-full aspect-square max-w-[590px] max-h-[590px]" ref={boardRef}>
+      <div className="flex-1 h-full aspect-square max-w-[800px] max-h-[800px]" ref={boardRef}>
         <Chessboard
           position={game.fen()}
           customPieces={customPieces}

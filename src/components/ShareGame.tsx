@@ -23,9 +23,10 @@ export default function ShareGame({
   pgn: any;
   playerA: string;
   playerB: string;
-}) {
+}): React.JSX.Element {
+
   return (
-    <div className="w-full mt-2">
+    <div className="">
       <Dialog>
         <DialogTrigger className="w-full">
           <Button

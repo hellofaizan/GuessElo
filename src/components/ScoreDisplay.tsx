@@ -30,19 +30,16 @@ export default function ScoreDisplay({
       <div className="rounded-lg border-2 border-green-400 bg-green-50 p-6 text-center dark:bg-green-950/20">
         <div className="mb-4 flex items-center justify-center gap-2">
           <Trophy className="h-6 w-6 text-yellow-500" />
-          <h3 className="text-xl font-bold">Your Score</h3>
+          <h3 className="text-lg font-bold">Your Score</h3>
         </div>
         
-        <div className="mb-4">
+        <div className="mb-2">
           <div className="text-4xl font-bold text-green-600">
             {scoreResult.score}/100
           </div>
-          <div className={`text-lg font-semibold ${scoreResult.color}`}>
-            Grade: {scoreResult.grade}
-          </div>
         </div>
 
-        <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="mb-4 grid grid-cols-2 text-sm text-gray-600 dark:text-gray-400">
           <div>Your Guess: <span className="font-semibold">{guessedElo}</span></div>
           <div>Actual Elo: <span className="font-semibold">{actualElo}</span></div>
           <div>Difference: <span className="font-semibold">{diff} points</span></div>
@@ -54,52 +51,51 @@ export default function ScoreDisplay({
         </div>
       </div>
 
-      {/* Statistics */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-lg border border-gray-200 bg-white p-4 text-center dark:border-gray-700 dark:bg-gray-800">
-          <div className="mb-2 flex items-center justify-center gap-1">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 text-start dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-2 flex items-center justify-start gap-1">
             <TrendingUp className="h-4 w-4 text-blue-500" />
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Current Streak
             </span>
           </div>
-          <div className="text-2xl font-bold text-blue-600">
+          <div className="text-5xl font-bold text-blue-600">
             {currentStreak}
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 text-center dark:border-gray-700 dark:bg-gray-800">
-          <div className="mb-2 flex items-center justify-center gap-1">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 text-start dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-2 flex items-center justify-start gap-1">
             <Award className="h-4 w-4 text-purple-500" />
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Best Streak
             </span>
           </div>
-          <div className="text-2xl font-bold text-purple-600">
+          <div className="text-5xl font-bold text-purple-600">
             {bestStreak}
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 text-center dark:border-gray-700 dark:bg-gray-800">
-          <div className="mb-2 flex items-center justify-center gap-1">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 text-start dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-2 flex items-center justify-start gap-1">
             <Target className="h-4 w-4 text-green-500" />
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Games Played
             </span>
           </div>
-          <div className="text-2xl font-bold text-green-600">
+          <div className="text-5xl font-bold text-green-600">
             {gamesPlayed}
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-4 text-center dark:border-gray-700 dark:bg-gray-800">
-          <div className="mb-2 flex items-center justify-center gap-1">
+        <div className="rounded-lg border border-gray-200 bg-white p-4 text-start dark:border-gray-700 dark:bg-gray-800">
+          <div className="mb-2 flex items-center justify-start gap-1">
             <Trophy className="h-4 w-4 text-yellow-500" />
             <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
               Avg Score
             </span>
           </div>
-          <div className="text-2xl font-bold text-yellow-600">
+          <div className="text-5xl font-bold text-yellow-600">
             {averageScore}
           </div>
         </div>

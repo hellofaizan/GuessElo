@@ -1,6 +1,6 @@
 # Guess The Elo 🏆♟️
 
-A chess training application that challenges users to guess the Elo rating of players based on their gameplay. Test your chess intuition, compete on the leaderboard, and improve your understanding of chess skill levels.
+A chess training application that challenges users to guess the Elo rating of players based on their gameplay. Test your chess intuition, compete on the leaderboard, and improve your understanding of chess skill levels (SoM)
 
 ## 🎯 Features
 
@@ -21,31 +21,11 @@ A chess training application that challenges users to guess the Elo rating of pl
 - **UI Components**: Lucide React Icons, Sonner for notifications
 - **SEO**: Next.js Metadata API, Structured Data (JSON-LD)
 
-## 📊 SEO Features
-
-### ✅ Implemented SEO Elements
-
-- **Meta Tags**: Comprehensive title, description, and keyword optimization
-- **Open Graph**: Rich social media sharing with custom images
-- **Twitter Cards**: Optimized for Twitter sharing
-- **Structured Data**: JSON-LD schema markup for search engines
-- **Sitemap**: Dynamic XML sitemap generation
-- **Robots.txt**: Search engine crawling instructions
-- **Web App Manifest**: PWA capabilities for mobile devices
-- **Canonical URLs**: Prevent duplicate content issues
-- **Page-Specific Metadata**: Optimized for each route
-
-### 🎯 SEO Keywords
-
-Primary keywords: `chess elo guessing game`, `chess rating challenge`, `chess training app`, `chess analysis tool`, `chess improvement game`
-
-Secondary keywords: `chess leaderboard`, `elo guessing leaderboard`, `chess competition`, `chess rankings`, `chess scores`
-
 ## 🛠️ Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/guesstheelo.git
+   git clone https://github.com/hellofaizan/gte.git
    cd guesstheelo
    ```
 
@@ -127,7 +107,7 @@ guesstheelo/
 Create a `.env.local` file:
 
 ```env
-NEXT_PUBLIC_SITE_URL=https://guesstheelo.com
+NEXT_PUBLIC_SITE_URL=https://guesselo.mohammadfaizan.in/
 NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=your-ga-id
 ```
 
@@ -139,19 +119,6 @@ Update the following files with your domain:
 - `src/app/sitemap.ts` - Update `baseUrl`
 - `public/robots.txt` - Update sitemap URL
 - `public/site.webmanifest` - Update app details
-
-## 📈 SEO Performance
-
-### Core Web Vitals
-- **LCP**: Optimized with Next.js Image component
-- **FID**: Minimal JavaScript with efficient React rendering
-- **CLS**: Stable layout with proper CSS
-
-### Search Engine Optimization
-- **Mobile-First**: Responsive design for all devices
-- **Fast Loading**: Optimized bundle size and lazy loading
-- **Accessibility**: ARIA labels and keyboard navigation
-- **Structured Data**: Rich snippets for search results
 
 ## 🚀 Deployment
 
@@ -179,10 +146,6 @@ The application is ready for Google Analytics integration. Add your GA4 ID to th
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - [Chess.com](https://chess.com) for game data
@@ -193,8 +156,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email support@guesstheelo.com or create an issue in this repository.
+For support, email faizan@mohammadfaizan.in or create an issue in this repository.
 
 ---
 
-**Made with ♟️ by the Guess The Elo Team**
+**Made with ♟️ by the Mohammad Faizan**

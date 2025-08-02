@@ -1,108 +1,78 @@
-# Guess The Elo 🏆♟️
+# Guess The Elo
 
-A chess training application that challenges users to guess the Elo rating of players based on their gameplay. Test your chess intuition, compete on the leaderboard, and improve your understanding of chess skill levels (SoM)
+A chess training app that tests your ability to guess player Elo ratings by watching their games. Challenge your chess intuition and see how well you understand different skill levels.
 
-## 🎯 Features
+## Features
 
-- **Interactive Chess Games**: Watch real chess games and guess player Elo ratings
-- **Scoring System**: Get graded scores with detailed feedback and accuracy metrics
-- **Leaderboard Competition**: Compete with other players worldwide
-- **Game Import**: Import custom PGN games for practice
-- **Move Navigation**: Navigate through games with intuitive controls
-- **Statistics Tracking**: Monitor your progress with detailed analytics
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- Watch real chess games and guess player ratings
+- Get scored feedback with accuracy metrics
+- Compete on the global leaderboard
+- Import your own PGN games for practice
+- Navigate through games with simple controls
+- Track your progress with detailed stats
+- Works on desktop and mobile
 
-## 🚀 Tech Stack
+## Tech Stack
 
-- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
-- **Styling**: Tailwind CSS v4, Radix UI Components
-- **Chess Engine**: chess.js, react-chessboard
-- **State Management**: React Hooks with custom useChessGame hook
-- **UI Components**: Lucide React Icons, Sonner for notifications
-- **SEO**: Next.js Metadata API, Structured Data (JSON-LD)
+- Next.js 15 with App Router
+- React 19 and TypeScript
+- Tailwind CSS v4 for styling
+- Radix UI for components
+- chess.js and react-chessboard for chess logic
+- Custom React hooks for state management
+- Lucide React for icons
+- Sonner for notifications
 
-## 🛠️ Installation
+## Getting Started
 
-1. **Clone the repository**
+1. Clone the repo
    ```bash
    git clone https://github.com/hellofaizan/gte.git
    cd guesstheelo
    ```
 
-2. **Install dependencies**
+2. Install dependencies
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
-3. **Run the development server**
+3. Start the dev server
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+4. Open http://localhost:3000 in your browser
 
-## 📁 Project Structure
+## Project Structure
 
 ```
-guesstheelo/
-├── src/
-│   ├── app/
-│   │   ├── (main_page)/
-│   │   │   ├── components/
-│   │   │   │   ├── gtepage.tsx          # Main game interface
-│   │   │   │   ├── GameControls.tsx     # Game navigation controls
-│   │   │   │   ├── GameMeta.tsx         # Game metadata display
-│   │   │   │   ├── MoveList.tsx         # Move list component
-│   │   │   │   └── PlayerInfo.tsx       # Player information
-│   │   │   └── page.tsx                 # Home page with SEO metadata
-│   │   ├── leaderboard/
-│   │   │   └── page.tsx                 # Leaderboard page with structured data
-│   │   ├── layout.tsx                   # Root layout with global SEO
-│   │   ├── sitemap.ts                   # Dynamic sitemap generation
-│   │   └── globals.css                  # Global styles
-│   ├── components/
-│   │   ├── GameInterface.tsx            # Main game UI component
-│   │   ├── ScoreDisplay.tsx             # Score results display
-│   │   ├── GameStats.tsx                # Statistics component
-│   │   ├── ShareGame.tsx                # Game sharing functionality
-│   │   ├── board/
-│   │   │   ├── board.tsx                # Chess board component
-│   │   │   ├── pieces.tsx               # Chess pieces
-│   │   │   └── sounds.tsx               # Sound effects
-│   │   └── ui/                          # Radix UI components
-│   ├── hooks/
-│   │   └── use-chess-game.ts            # Main game logic hook
-│   ├── lib/
-│   │   ├── utils.ts                     # Utility functions
-│   │   └── scoring.ts                   # Scoring algorithm
-│   └── actions/
-│       ├── chessgames.ts                # Chess.com API integration
-│       └── getclock.ts                  # PGN clock processing
-├── public/
-│   ├── robots.txt                       # Search engine instructions
-│   ├── site.webmanifest                 # PWA manifest
-│   ├── favicon.ico                      # Site favicon
-│   └── chessset/                        # Chess piece images
-└── package.json
+src/
+├── app/
+│   ├── (main_page)/          # Main game page
+│   ├── leaderboard/          # Leaderboard page
+│   └── layout.tsx           # Root layout
+├── components/
+│   ├── GameInterface.tsx     # Main game UI
+│   ├── board/               # Chess board components
+│   └── ui/                  # UI components
+├── hooks/
+│   └── use-chess-game.ts    # Game logic
+├── lib/
+│   └── scoring.ts           # Scoring algorithm
+└── actions/
+    └── chessgames.ts        # API integration
 ```
 
-## 🎮 How to Play
+## How to Play
 
-1. **Start a Game**: Click "Start Game" to load a random chess game
-2. **Watch the Game**: Navigate through moves using the controls
-3. **Make Your Guess**: Use the slider to guess the average Elo rating
-4. **Submit Your Guess**: Click "Submit Guess" to see your results
-5. **View Results**: Get your score, grade, and detailed feedback
-6. **Compete**: Check the leaderboard to see how you rank
+1. Click "Start Game" to load a random chess game
+2. Watch the game and navigate through moves
+3. Use the slider to guess the average Elo rating
+4. Submit your guess to see your results
+5. Check your score and grade
+6. Compare your performance on the leaderboard
 
-## 🔧 Configuration
-
-### Environment Variables
+## Configuration
 
 Create a `.env.local` file:
 
@@ -111,53 +81,44 @@ NEXT_PUBLIC_SITE_URL=https://guesselo.mohammadfaizan.in/
 NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=your-ga-id
 ```
 
-### SEO Configuration
+Update these files with your domain:
+- `src/app/layout.tsx` - metadataBase URL
+- `src/app/sitemap.ts` - baseUrl
+- `public/robots.txt` - sitemap URL
 
-Update the following files with your domain:
+## Deployment
 
-- `src/app/layout.tsx` - Update `metadataBase` URL
-- `src/app/sitemap.ts` - Update `baseUrl`
-- `public/robots.txt` - Update sitemap URL
-- `public/site.webmanifest` - Update app details
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
+### Vercel
 ```bash
 npm run build
 vercel --prod
 ```
 
-### Other Platforms
+### Other platforms
 ```bash
 npm run build
 npm start
 ```
 
-## 📊 Analytics
-
-The application is ready for Google Analytics integration. Add your GA4 ID to the environment variables and implement tracking in the game components.
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## 🙏 Acknowledgments
+## Credits
 
-- [Chess.com](https://chess.com) for game data
-- [chess.js](https://github.com/jhlywa/chess.js) for chess logic
-- [react-chessboard](https://github.com/Clariity/react-chessboard) for the chess interface
-- [Radix UI](https://www.radix-ui.com/) for accessible components
-- [Tailwind CSS](https://tailwindcss.com/) for styling
+- Chess.com for game data
+- chess.js for chess logic
+- react-chessboard for the interface
+- Radix UI for components
+- Tailwind CSS for styling
 
-## 📞 Support
+## Support
 
-For support, email faizan@mohammadfaizan.in or create an issue in this repository.
+Email faizan@mohammadfaizan.in or open an issue in this repo.
 
 ---
 
-**Made with ♟️ by the Mohammad Faizan**
+Made with chess by Mohammad Faizan

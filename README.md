@@ -1,50 +1,52 @@
-# ♟️ Guess The Elo
+# Guess The Elo 🏆♟️
 
-A modern, interactive chess game explorer and analysis tool built with Next.js, featuring a beautiful UI, real-time move lists, sound effects, and advanced customization. Perfect for studying games, playing against yourself, or sharing chess moments.
+A chess training application that challenges users to guess the Elo rating of players based on their gameplay. Test your chess intuition, compete on the leaderboard, and improve your understanding of chess skill levels.
 
-## ✨ Features
+## 🎯 Features
 
-### 🕹️ Interactive Chessboard
-- **Drag & Drop Moves**: Intuitive piece movement
-- **Legal Move Highlighting**: Visual cues for possible moves
-- **Move Animation**: Smooth transitions for every move
-- **Sound Effects**: Realistic chess sounds for moves, captures, checks, and more
+- **Interactive Chess Games**: Watch real chess games and guess player Elo ratings
+- **Scoring System**: Get graded scores with detailed feedback and accuracy metrics
+- **Leaderboard Competition**: Compete with other players worldwide
+- **Game Import**: Import custom PGN games for practice
+- **Move Navigation**: Navigate through games with intuitive controls
+- **Statistics Tracking**: Monitor your progress with detailed analytics
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-### 📜 Move List & Game Details
-- **Real-time Move List**: Track every move as you play or explore
-- **Game Metadata**: Display player names, event, date, and more
-- **Move Navigation**: Jump to any move in the game
+## 🚀 Tech Stack
 
-### ⏰ Clocks & Timers
-- **Dual Player Clocks**: Track time for both sides
-- **Custom Time Controls**: Set your own game pace
+- **Frontend**: Next.js 15 (App Router), React 19, TypeScript
+- **Styling**: Tailwind CSS v4, Radix UI Components
+- **Chess Engine**: chess.js, react-chessboard
+- **State Management**: React Hooks with custom useChessGame hook
+- **UI Components**: Lucide React Icons, Sonner for notifications
+- **SEO**: Next.js Metadata API, Structured Data (JSON-LD)
 
-### 🧑‍💻 Modern UI/UX
-- **Responsive Design**: Works seamlessly on desktop and mobile
-- **Dark/Light Mode**: Automatic theme switching
-- **Intuitive Controls**: Clean, organized interface
+## 📊 SEO Features
 
-### 🔊 Audio & Visual Feedback
-- **Customizable Sounds**: Toggle sound effects for different actions
-- **Piece & Board Themes**: Choose from multiple visual styles
+### ✅ Implemented SEO Elements
 
-### 📂 Game Management
-- **Load Random Games**: Instantly load a random chess game
-- **Game Export**: Download games in PGN format (coming soon)
-- **Game Import**: Paste or upload your own PGN (coming soon)
+- **Meta Tags**: Comprehensive title, description, and keyword optimization
+- **Open Graph**: Rich social media sharing with custom images
+- **Twitter Cards**: Optimized for Twitter sharing
+- **Structured Data**: JSON-LD schema markup for search engines
+- **Sitemap**: Dynamic XML sitemap generation
+- **Robots.txt**: Search engine crawling instructions
+- **Web App Manifest**: PWA capabilities for mobile devices
+- **Canonical URLs**: Prevent duplicate content issues
+- **Page-Specific Metadata**: Optimized for each route
 
-## 🚀 Getting Started
+### 🎯 SEO Keywords
 
-### Prerequisites
-- Node.js 18+
-- npm, yarn, pnpm, or bun
+Primary keywords: `chess elo guessing game`, `chess rating challenge`, `chess training app`, `chess analysis tool`, `chess improvement game`
 
-### Installation
+Secondary keywords: `chess leaderboard`, `elo guessing leaderboard`, `chess competition`, `chess rankings`, `chess scores`
+
+## 🛠️ Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/hellofaizan/GuessELo.git
-   cd gte
+   git clone https://github.com/yourusername/guesstheelo.git
+   cd guesstheelo
    ```
 
 2. **Install dependencies**
@@ -64,85 +66,112 @@ A modern, interactive chess game explorer and analysis tool built with Next.js, 
 4. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 📝 TODO
-
-- [x] Interactive chessboard with drag & drop
-- [x] Move list and navigation
-- [x] Game metadata display
-- [x] Sound effects for moves and events
-- [x] Responsive, modern UI
-- [x] Dark/Light mode
-- [x] Player clocks and timers
-- [x] Import PGN (paste/upload)
-- [x] Export PGN
-- [ ] Scoring and Leaderboard system
-- [ ] Fun randomizer button (load random famous games)
-- [ ] Highlight last move
-- [ ] Cloud save support
-- [ ] Add text overlay or annotation tools
-- [ ] Multiplayer support (online play)
-- [ ] Add more color presets for board and pieces
-
----
-
-*This list is for fun and learning! If you have ideas, feel free to open an issue or PR.*
-
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js](https://nextjs.org/) (App Router)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/)
-- **Chess Logic**: [chess.js](https://github.com/jhlywa/chess.js) (if used)
-- **Sound**: Native HTML5 Audio
-
 ## 📁 Project Structure
 
 ```
-gte/
+guesstheelo/
 ├── src/
-│   ├── app/                 # Next.js App Router
-│   │   ├── (main_page)/     # Main chess page and components
-│   │   ├── api/             # API routes (random game, etc.)
-│   │   ├── globals.css      # Global styles
-│   │   └── layout.tsx       # Root layout
-│   ├── components/          # React components
-│   │   ├── board/           # Chessboard, pieces, sounds
-│   │   ├── ui/              # Reusable UI components
-│   │   ├── aboutgte.tsx     # About page/component
-│   │   ├── evaluation.tsx   # Evaluation bar/component
-│   │   ├── gamedetails.tsx  # Game metadata
-│   │   └── timer.tsx        # Clocks and timers
-│   ├── actions/             # Server actions (game, clock)
-│   ├── hooks/               # Custom React hooks
-│   └── lib/                 # Utility functions
-├── public/                  # Static assets (pieces, sounds, icons)
-├── package.json             # Dependencies and scripts
-└── README.md                # Project documentation
+│   ├── app/
+│   │   ├── (main_page)/
+│   │   │   ├── components/
+│   │   │   │   ├── gtepage.tsx          # Main game interface
+│   │   │   │   ├── GameControls.tsx     # Game navigation controls
+│   │   │   │   ├── GameMeta.tsx         # Game metadata display
+│   │   │   │   ├── MoveList.tsx         # Move list component
+│   │   │   │   └── PlayerInfo.tsx       # Player information
+│   │   │   └── page.tsx                 # Home page with SEO metadata
+│   │   ├── leaderboard/
+│   │   │   └── page.tsx                 # Leaderboard page with structured data
+│   │   ├── layout.tsx                   # Root layout with global SEO
+│   │   ├── sitemap.ts                   # Dynamic sitemap generation
+│   │   └── globals.css                  # Global styles
+│   ├── components/
+│   │   ├── GameInterface.tsx            # Main game UI component
+│   │   ├── ScoreDisplay.tsx             # Score results display
+│   │   ├── GameStats.tsx                # Statistics component
+│   │   ├── ShareGame.tsx                # Game sharing functionality
+│   │   ├── board/
+│   │   │   ├── board.tsx                # Chess board component
+│   │   │   ├── pieces.tsx               # Chess pieces
+│   │   │   └── sounds.tsx               # Sound effects
+│   │   └── ui/                          # Radix UI components
+│   ├── hooks/
+│   │   └── use-chess-game.ts            # Main game logic hook
+│   ├── lib/
+│   │   ├── utils.ts                     # Utility functions
+│   │   └── scoring.ts                   # Scoring algorithm
+│   └── actions/
+│       ├── chessgames.ts                # Chess.com API integration
+│       └── getclock.ts                  # PGN clock processing
+├── public/
+│   ├── robots.txt                       # Search engine instructions
+│   ├── site.webmanifest                 # PWA manifest
+│   ├── favicon.ico                      # Site favicon
+│   └── chessset/                        # Chess piece images
+└── package.json
 ```
 
-## ♟️ Usage Guide
+## 🎮 How to Play
 
-### Playing or Exploring a Game
+1. **Start a Game**: Click "Start Game" to load a random chess game
+2. **Watch the Game**: Navigate through moves using the controls
+3. **Make Your Guess**: Use the slider to guess the average Elo rating
+4. **Submit Your Guess**: Click "Submit Guess" to see your results
+5. **View Results**: Get your score, grade, and detailed feedback
+6. **Compete**: Check the leaderboard to see how you rank
 
-1. **Start a New Game**
-   - Use the controls to start a new game or load a random one
-2. **Move Pieces**
-   - Drag and drop pieces, or tap to select and move
-3. **Track Progress**
-   - Watch the move list update in real time
-   - See clocks and game metadata update as you play
-4. **Customize Experience**
-   - Toggle sound, switch themes, and adjust settings in the sidebar
+## 🔧 Configuration
 
-### Tips for Best Results
+### Environment Variables
 
-- **For Study**: Use the move list and metadata to analyze famous games
-- **For Fun**: Try the random game feature or experiment with different themes
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://guesstheelo.com
+NEXT_PUBLIC_GOOGLE_ANALYTICS_ID=your-ga-id
+```
+
+### SEO Configuration
+
+Update the following files with your domain:
+
+- `src/app/layout.tsx` - Update `metadataBase` URL
+- `src/app/sitemap.ts` - Update `baseUrl`
+- `public/robots.txt` - Update sitemap URL
+- `public/site.webmanifest` - Update app details
+
+## 📈 SEO Performance
+
+### Core Web Vitals
+- **LCP**: Optimized with Next.js Image component
+- **FID**: Minimal JavaScript with efficient React rendering
+- **CLS**: Stable layout with proper CSS
+
+### Search Engine Optimization
+- **Mobile-First**: Responsive design for all devices
+- **Fast Loading**: Optimized bundle size and lazy loading
+- **Accessibility**: ARIA labels and keyboard navigation
+- **Structured Data**: Rich snippets for search results
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+```bash
+npm run build
+vercel --prod
+```
+
+### Other Platforms
+```bash
+npm run build
+npm start
+```
+
+## 📊 Analytics
+
+The application is ready for Google Analytics integration. Add your GA4 ID to the environment variables and implement tracking in the game components.
 
 ## 🤝 Contributing
-
-We welcome contributions! Please feel free to submit a Pull Request. For major changes, open an issue first to discuss your ideas.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -150,20 +179,22 @@ We welcome contributions! Please feel free to submit a Pull Request. For major c
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## 🙏 Acknowledgments
 
+- [Chess.com](https://chess.com) for game data
 - [chess.js](https://github.com/jhlywa/chess.js) for chess logic
-- [Radix UI](https://www.radix-ui.com/) for accessible UI components
-- [Tailwind CSS](https://tailwindcss.com/) for utility-first CSS
+- [react-chessboard](https://github.com/Clariity/react-chessboard) for the chess interface
+- [Radix UI](https://www.radix-ui.com/) for accessible components
+- [Tailwind CSS](https://tailwindcss.com/) for styling
 
 ## 📞 Support
 
-If you have any questions or need help, please:
-
-- Open an issue on GitHub
-- Check the existing issues for solutions
-- Join our community discussions
+For support, email support@guesstheelo.com or create an issue in this repository.
 
 ---
 
-**Made with ❤️ by Mohammad Faizan**
+**Made with ♟️ by the Guess The Elo Team**

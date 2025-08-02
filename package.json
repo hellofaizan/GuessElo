@@ -1,6 +1,35 @@
 {
-  "name": "gte",
-  "version": "0.1.0",
+  "name": "guesstheelo",
+  "version": "1.0.0",
+  "description": "A chess training application that challenges users to guess the Elo rating of players based on their gameplay. Test your chess intuition, compete on the leaderboard, and improve your understanding of chess skill levels.",
+  "keywords": [
+    "chess",
+    "elo rating",
+    "chess game",
+    "chess analysis",
+    "chess training",
+    "chess rating",
+    "chess intuition",
+    "chess practice",
+    "chess improvement",
+    "chess skills",
+    "chess leaderboard",
+    "chess competition"
+  ],
+  "author": {
+    "name": "Guess The Elo Team",
+    "email": "support@guesstheelo.com",
+    "url": "https://guesstheelo.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/guesstheelo.git"
+  },
+  "homepage": "https://guesstheelo.com",
+  "bugs": {
+    "url": "https://github.com/yourusername/guesstheelo/issues"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -43,5 +72,9 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }

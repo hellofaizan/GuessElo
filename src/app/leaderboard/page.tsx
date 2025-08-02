@@ -130,163 +130,213 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-7xl mx-auto p-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Trophy className="h-8 w-8 text-yellow-500" />
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              Leaderboard
-            </h1>
-          </div>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
-            Top players in Guess The Elo
-          </p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                <Target className="h-4 w-4" />
-                Total Players
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">1,247</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                Games Played Today
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">3,456</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                <Award className="h-4 w-4" />
-                Average Score
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-600">72</div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                <Trophy className="h-4 w-4" />
-                Best Streak
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-orange-600">23</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Leaderboard */}
-        <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-yellow-500" />
-              Top Players
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {leaderboard.map((player, index) => (
-                <div
-                  key={player.id}
-                  className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-700"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-8 h-8">
-                      {getRankIcon(index + 1)}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900 dark:text-white">
-                        {player.name}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Last played: {player.lastPlayed}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-6">
-                    <div className="text-center">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Total Score
-                      </div>
-                      <div className="font-bold text-blue-600">
-                        {player.totalScore.toLocaleString()}
-                      </div>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Avg Score
-                      </div>
-                      <div className="font-bold text-green-600">
-                        {player.averageScore}
-                      </div>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Games
-                      </div>
-                      <div className="font-bold text-purple-600">
-                        {player.gamesPlayed}
-                      </div>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Best Streak
-                      </div>
-                      <div className="font-bold text-orange-600">
-                        {player.bestStreak}
-                      </div>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="text-sm text-gray-500 dark:text-gray-400">
-                        Best Grade
-                      </div>
-                      <div className={`font-bold ${getGradeColor(player.bestGrade)}`}>
-                        {player.bestGrade}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            "name": "Guess The Elo Leaderboard",
+            "description": "Top players in the Guess The Elo chess rating challenge",
+            "numberOfItems": leaderboard.length,
+            "itemListElement": leaderboard.map((player, index) => ({
+              "@type": "ListItem",
+              "position": index + 1,
+              "item": {
+                "@type": "Person",
+                "name": player.name,
+                "description": `Rank ${index + 1} with ${player.totalScore} total score and ${player.averageScore} average score`,
+                "additionalProperty": [
+                  {
+                    "@type": "PropertyValue",
+                    "name": "Total Score",
+                    "value": player.totalScore
+                  },
+                  {
+                    "@type": "PropertyValue",
+                    "name": "Games Played",
+                    "value": player.gamesPlayed
+                  },
+                  {
+                    "@type": "PropertyValue",
+                    "name": "Average Score",
+                    "value": player.averageScore
+                  },
+                  {
+                    "@type": "PropertyValue",
+                    "name": "Best Streak",
+                    "value": player.bestStreak
+                  },
+                  {
+                    "@type": "PropertyValue",
+                    "name": "Best Grade",
+                    "value": player.bestGrade
+                  }
+                ]
+              }
+            }))
+          })
+        }}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto p-4">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Trophy className="h-8 w-8 text-yellow-500" />
+              <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                Leaderboard
+              </h1>
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Top players in Guess The Elo
+            </p>
+          </div>
 
-        {/* Call to Action */}
-        <div className="text-center mt-8">
-          <Button
-            onClick={() => window.history.back()}
-            className="px-8 py-3 text-lg"
-          >
-            Play Now
-          </Button>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  Total Players
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-600">1,247</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Games Played Today
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">3,456</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  Average Score
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-purple-600">72</div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                  <Trophy className="h-4 w-4" />
+                  Best Streak
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-orange-600">23</div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Leaderboard */}
+          <Card className="bg-white dark:bg-gray-800 border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-yellow-500" />
+                Top Players
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {leaderboard.map((player, index) => (
+                  <div
+                    key={player.id}
+                    className="flex items-center justify-between p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors bg-white dark:bg-gray-700"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-center justify-center w-8 h-8">
+                        {getRankIcon(index + 1)}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-gray-900 dark:text-white">
+                          {player.name}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Last played: {player.lastPlayed}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Total Score
+                        </div>
+                        <div className="font-bold text-blue-600">
+                          {player.totalScore.toLocaleString()}
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Avg Score
+                        </div>
+                        <div className="font-bold text-green-600">
+                          {player.averageScore}
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Games
+                        </div>
+                        <div className="font-bold text-purple-600">
+                          {player.gamesPlayed}
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Best Streak
+                        </div>
+                        <div className="font-bold text-orange-600">
+                          {player.bestStreak}
+                        </div>
+                      </div>
+
+                      <div className="text-center">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          Best Grade
+                        </div>
+                        <div className={`font-bold ${getGradeColor(player.bestGrade)}`}>
+                          {player.bestGrade}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Call to Action */}
+          <div className="text-center mt-8">
+            <Button
+              onClick={() => window.history.back()}
+              className="px-8 py-3 text-lg"
+            >
+              Play Now
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
